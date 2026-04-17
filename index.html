@@ -119,7 +119,7 @@ function renderCrops(){
       <div class="detail ${openId===c.id?'open':''}" id="d-${c.id}">
         <div class="photo-area">
           <div class="lbl">写真を追加（任意）</div>
-          <input type="file" accept="image/*" capture="environment" class="photo-input" id="pi-${c.id}" onchange="onPhoto('${c.id}',this)">
+          <input type="file" accept="image/*"  class="photo-input" id="pi-${c.id}" onchange="onPhoto('${c.id}',this)">
           <img class="photo-preview" id="pp-${c.id}">
           <div class="photo-upload" onclick="document.getElementById('pi-${c.id}').click()">📷 写真を撮影・選択する</div>
         </div>
