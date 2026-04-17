@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌱 ハタケランド</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f0;color:#1a1a1a;}
+.app{max-width:480px;margin:0 auto;padding:0.75rem;}
+.hdr{margin-bottom:1rem;padding:0.5rem 0;}
+.hdr h1{font-size:20px;font-weight:600;}
+.hdr p{font-size:12px;color:#666;margin-top:3px;}
+.tabs{display:flex;gap:6px;margin-bottom:1rem;overflow-x:auto;padding-bottom:2px;}
+.tab{flex:none;padding:7px 16px;border-radius:20px;border:1px solid #ddd;font-size:13px;cursor:pointer;background:#fff;color:#666;}
+.tab.active{background:#1D9E75;color:#fff;border-color:#1D9E75;font-weight:500;}
+.sec{display:none;}
+.sec.active{display:block;}
+.crop-list{display:flex;flex-direction:column;gap:10px;}
+.crop-card{background:#fff;border:1px solid #e8e8e8;border-radius:16px;padding:1rem;cursor:pointer;}
+.crop-card.open{border:2px solid #1D9E75;}
+.crop-row{display:flex;align-items:center;gap:10px;}
+.crop-ico{font-size:24px;}
+.crop-info{flex:1;}
+.crop-name{font-size:14px;font-weight:600;}
+.crop-st{font-size:12px;color:#888;margin-top:2px;}
+.sdot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:4px;}
+.dg{background:#1D9E75;}.da{background:#EF9F27;}.db{background:#378ADD;}
+.chevron{font-size:12px;color:#bbb;transition:transform 0.2s;}
+.chevron.open{transform:rotate(180deg);}
+.detail{margin-top:12px;border-top:1px solid #f0f0f0;padding-top:12px;display:none;}
+.detail.open{display:block;}
+.lbl{font-size:11px;color:#888;margin-bottom:4px;font-weight:500;}
+textarea{width:100%;height:64px;font-size:13px;resize:none;border:1px solid #e0e0e0;border-radius:10px;padding:8px;font-family:inherit;margin-bottom:8px;}
+input[type=text]{width:100%;font-size:13px;border:1px solid #e0e0e0;border-radius:10px;padding:8px 10px;margin-bottom:8px;font-family:inherit;}
+.row2{display:flex;gap:8px;margin-bottom:8px;}
+.row2>div{flex:1;}
+.row2 input{margin-bottom:0;}
+.photo-area{margin-bottom:10px;}
+.photo-upload{width:100%;padding:12px;border:2px dashed #ddd;border-radius:12px;background:#fafafa;text-align:center;cursor:pointer;font-size:13px;color:#888;}
+.photo-upload:hover{border-color:#1D9E75;color:#1D9E75;}
+.photo-preview{width:100%;max-height:200px;object-fit:cover;border-radius:12px;margin-bottom:8px;display:none;}
+.photo-input{display:none;}
+.abtn{width:100%;padding:13px;font-size:14px;font-weight:600;cursor:pointer;border-radius:12px;border:none;background:#1D9E75;color:#fff;margin-bottom:8px;}
+.abtn:disabled{opacity:0.5;cursor:default;}
+.sbtn{width:100%;padding:11px;font-size:13px;cursor:pointer;border-radius:12px;border:1px solid #ddd;background:#fff;color:#333;}
+.ai-box{background:#f0faf5;border-radius:12px;padding:1rem;margin-top:8px;border:1px solid #c8e6d6;}
+.ai-lbl{font-size:10px;font-weight:700;color:#1D9E75;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:6px;}
+.ai-txt{font-size:13px;color:#1a1a1a;line-height:1.7;white-space:pre-wrap;}
+.suggest-list{display:flex;flex-direction:column;gap:10px;}
+.scard{background:#fff;border:1px solid #e8e8e8;border-radius:16px;padding:1rem;}
+.stag{display:inline-block;font-size:11px;padding:3px 8px;border-radius:20px;margin-bottom:6px;font-weight:500;}
+.ts{background:#e8f5e9;color:#2e7d32;}.tt{background:#e3f2fd;color:#1565c0;}.tp{background:#fff3e0;color:#e65100;}
+.sname{font-size:15px;font-weight:600;}
+.sdesc{font-size:12px;color:#666;margin-top:4px;line-height:1.6;}
+.trend-btn{width:100%;padding:13px;font-size:13px;cursor:pointer;border-radius:12px;border:1px solid #ddd;background:#fff;color:#333;margin-bottom:1rem;font-family:inherit;}
+.trend-btn:disabled{opacity:0.5;}
+.log-list{display:flex;flex-direction:column;gap:10px;}
+.log-item{background:#fff;border:1px solid #e8e8e8;border-radius:16px;padding:12px;}
+.log-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.log-crop{font-size:13px;font-weight:600;}
+.log-date{font-size:11px;color:#aaa;}
+.log-photo{width:100%;max-height:160px;object-fit:cover;border-radius:10px;margin-bottom:8px;}
+.log-memo{font-size:12px;color:#555;line-height:1.5;margin-top:4px;}
+.log-ai{font-size:11px;color:#888;margin-top:6px;border-top:1px solid #f0f0f0;padding-top:6px;line-height:1.5;}
+.empty{font-size:13px;color:#aaa;text-align:center;padding:2rem 0;}
+.del-btn{font-size:18px;color:#ccc;background:none;border:none;cursor:pointer;padding:0;line-height:1;}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="hdr">
+    <h1>🌱 ハタケランド</h1>
+    <p>作物の記録とAIアドバイス</p>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="sw('crops')">作物管理</button>
+    <button class="tab" onclick="sw('suggest')">おすすめ</button>
+    <button class="tab" onclick="sw('log')">記録帳</button>
+  </div>
+  <div id="t-crops" class="sec active">
+    <div class="crop-list" id="cropList"></div>
+  </div>
+  <div id="t-suggest" class="sec">
+    <button class="trend-btn" id="trendBtn" onclick="loadTrend()">🔍 今日のトレンドを取得する</button>
+    <div id="suggestList" class="suggest-list"></div>
+  </div>
+  <div id="t-log" class="sec">
+    <div id="logList"></div>
+  </div>
+</div>
+<script>
+const API_KEY='';
+const crops=[
+  {id:'snap',ico:'🫛',name:'スナップえんどう',status:'生育中',dot:'dg',stage:'花が咲き始めた頃'},
+  {id:'fava',ico:'🫘',name:'そら豆',status:'生育中',dot:'dg',stage:'茎が伸びてきた段階'},
+  {id:'onion',ico:'🧅',name:'早生玉ねぎ',status:'収穫近し',dot:'da',stage:'葉が倒れ始めている'},
+  {id:'garlic',ico:'🧄',name:'にんにく',status:'生育中',dot:'dg',stage:'葉が伸びている'},
+  {id:'mayo',ico:'🥔',name:'じゃがいも（メークイーン）',status:'発芽待ち',dot:'db',stage:'植え付けから2週間'},
+  {id:'andes',ico:'🥔',name:'じゃがいも（アンデス赤）',status:'発芽待ち',dot:'db',stage:'植え付けから2週間'},
+];
+const staticSuggests=[
+  {tag:'ts',label:'旬の提案',ico:'🌽',name:'とうもろこし',desc:'5月上旬が種まきの適期。収穫まで約3ヶ月で夏イベントにぴったり。'},
+  {tag:'tt',label:'海外トレンド',ico:'🫐',name:'スーパーフード系ベリー類',desc:'アメリカではブルーベリーが健康志向で急上昇中。国内でも注目されはじめています。'},
+  {tag:'tp',label:'話題のネタ',ico:'🫘',name:'そら豆（絵本ブーム）',desc:'「そらまめくんのベッド」シリーズが再ブーム。収穫体験イベントで子連れファミリーに刺さります。'},
+];
+let openId=null,logs=[],photoDataMap={};
+function loadLogs(){try{const d=localStorage.getItem('hatake-logs-v3');if(d)logs=JSON.parse(d);}catch(e){logs=[];}renderLog();}
+function saveLogs(){try{localStorage.setItem('hatake-logs-v3',JSON.stringify(logs));}catch(e){}}
+function fmtDate(d){const dt=new Date(d);return`${dt.getFullYear()}/${String(dt.getMonth()+1).padStart(2,'0')}/${String(dt.getDate()).padStart(2,'0')}`;}
+function renderCrops(){
+  document.getElementById('cropList').innerHTML=crops.map(c=>`
+    <div class="crop-card ${openId===c.id?'open':''}" id="cc-${c.id}">
+      <div class="crop-row" onclick="toggle('${c.id}')">
+        <div class="crop-ico">${c.ico}</div>
+        <div class="crop-info"><div class="crop-name">${c.name}</div><div class="crop-st"><span class="sdot ${c.dot}"></span>${c.status}</div></div>
+        <div class="chevron ${openId===c.id?'open':''}">▼</div>
+      </div>
+      <div class="detail ${openId===c.id?'open':''}" id="d-${c.id}">
+        <div class="photo-area">
+          <div class="lbl">写真を追加（任意）</div>
+          <input type="file" accept="image/*" capture="environment" class="photo-input" id="pi-${c.id}" onchange="onPhoto('${c.id}',this)">
+          <img class="photo-preview" id="pp-${c.id}">
+          <div class="photo-upload" onclick="document.getElementById('pi-${c.id}').click()">📷 写真を撮影・選択する</div>
+        </div>
+        <div class="lbl">今日の様子・メモ</div>
+        <textarea id="memo-${c.id}" placeholder="例：高さ20cm、葉が黄色い、虫がいた…"></textarea>
+        <div class="row2">
+          <div><div class="lbl">高さ（cm）</div><input type="text" id="h-${c.id}" placeholder="例：20"></div>
+          <div><div class="lbl">気になること</div><input type="text" id="q-${c.id}" placeholder="例：虫・変色"></div>
+        </div>
+        <button class="abtn" id="ab-${c.id}" onclick="askAI('${c.id}')">AIにアドバイスを聞く</button>
+        <button class="sbtn" onclick="saveLog('${c.id}')">📝 今日の記録を保存する</button>
+        <div id="air-${c.id}"></div>
+      </div>
+    </div>`).join('');
+}
+function onPhoto(id,input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const data=e.target.result;photoDataMap[id]=data;
+    const preview=document.getElementById('pp-'+id);
+    preview.src=data;preview.style.display='block';
+    input.nextElementSibling.nextElementSibling.textContent='📷 写真を変更する';
+  };reader.readAsDataURL(file);
+}
+function toggle(id){openId=openId===id?null:id;renderCrops();}
+async function askAI(id){
+  const c=crops.find(x=>x.id===id);
+  const memo=document.getElementById('memo-'+id).value||c.stage;
+  const h=document.getElementById('h-'+id).value;
+  const q=document.getElementById('q-'+id).value;
+  const photo=photoDataMap[id];
+  const btn=document.getElementById('ab-'+id);
+  const res=document.getElementById('air-'+id);
+  btn.disabled=true;btn.textContent='考え中...';
+  res.innerHTML='<div class="ai-box"><div class="ai-lbl">AI農業アドバイザー</div><div class="ai-txt">分析中...</div></div>';
+  const today=new Date();
+  const textContent=`作物：${c.name}\n現在の状態：${memo}${h?'\n高さ：'+h+'cm':''}\n${q?'気になること：'+q+'\n':''}今日：${today.getMonth()+1}月${today.getDate()}日\n広島県安佐南区・菌ちゃん農法で栽培。`;
+  let userContent=photo?[{type:'image',source:{type:'base64',media_type:photo.split(';')[0].split(':')[1],data:photo.split(',')[1]}},{type:'text',text:textContent}]:textContent;
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json','x-api-key':API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,
+        system:`あなたは広島県安佐南区の自然農法（菌ちゃん農法）農園「ハタケランド」専属の農業アドバイザーです。写真がある場合は必ず触れてください。回答は以下の3セクションで250字以内：\n【今すぐやること】具体的に1〜2個\n【収穫予測】時期の目安\n【注意点】1つだけ\nやさしく実践的な日本語で。`,
+        messages:[{role:'user',content:userContent}]})
+    });
+    const d=await r.json();
+    const txt=d.content?.map(b=>b.text||'').join('')||'取得できませんでした';
+    res.innerHTML=`<div class="ai-box"><div class="ai-lbl">AI農業アドバイザー${photo?' 📷':''}</div><div class="ai-txt">${txt}</div></div>`;
+  }catch(e){res.innerHTML='<div class="ai-box"><div class="ai-lbl">AI農業アドバイザー</div><div class="ai-txt">エラーが発生しました。</div></div>';}
+  btn.disabled=false;btn.textContent='AIにアドバイスを聞く';
+}
+async function saveLog(id){
+  const c=crops.find(x=>x.id===id);
+  const memo=document.getElementById('memo-'+id).value;
+  const h=document.getElementById('h-'+id).value;
+  const q=document.getElementById('q-'+id).value;
+  const aiTxt=document.getElementById('air-'+id).querySelector('.ai-txt')?.textContent||'';
+  const photo=photoDataMap[id]||null;
+  if(!memo&&!h&&!q&&!photo){alert('写真かメモを入れてください');return;}
+  logs.unshift({id:Date.now(),cropId:id,cropName:c.name,cropIco:c.ico,date:new Date().toISOString(),memo,height:h,concern:q,aiAdvice:aiTxt,photo});
+  saveLogs();renderLog();delete photoDataMap[id];
+  alert(`${c.name}の記録を保存しました！`);
+}
+function renderLog(){
+  const el=document.getElementById('logList');
+  if(!logs.length){el.innerHTML='<div class="empty">まだ記録がありません。<br>作物タブからメモや写真を保存してみましょう。</div>';return;}
+  el.innerHTML='<div class="log-list">'+logs.map(l=>`
+    <div class="log-item">
+      <div class="log-head"><div class="log-crop">${l.cropIco} ${l.cropName}</div><div style="display:flex;align-items:center;gap:8px"><div class="log-date">${fmtDate(l.date)}</div><button class="del-btn" onclick="deleteLog(${l.id})">×</button></div></div>
+      ${l.photo?`<img class="log-photo" src="${l.photo}">` :''}
+      ${l.memo?`<div class="log-memo">📝 ${l.memo}</div>`:''}
+      ${l.height?`<div class="log-memo">📏 高さ：${l.height}cm</div>`:''}
+      ${l.concern?`<div class="log-memo">⚠️ ${l.concern}</div>`:''}
+      ${l.aiAdvice?`<div class="log-ai">💬 ${l.aiAdvice.slice(0,100)}…</div>`:''}
+    </div>`).join('')+'</div>';
+}
+function deleteLog(id){if(!confirm('この記録を削除しますか？'))return;logs=logs.filter(l=>l.id!==id);saveLogs();renderLog();}
+async function loadTrend(){
+  const btn=document.getElementById('trendBtn');
+  btn.disabled=true;btn.textContent='トレンドを検索中...';
+  const sl=document.getElementById('suggestList');
+  sl.innerHTML='<div class="ai-box"><div class="ai-lbl">検索中</div><div class="ai-txt">最新のトレンドを調べています...</div></div>';
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json','x-api-key':API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,
+        tools:[{type:'web_search_20250305',name:'web_search'}],
+        system:`あなたは農業×エンタメのトレンドリサーチャーです。絵本・アニメ・SNSで話題の野菜、海外ブーム食材、スーパーフード、道の駅で人気の珍しい野菜をリサーチ。結果はJSON配列のみ：[{"tag":"tp","label":"ラベル名","ico":"絵文字","name":"作物名","desc":"100字以内"}] tagはts=旬/tt=海外/tp=話題。JSONのみ返すこと。`,
+        messages:[{role:'user',content:`今日は${new Date().getMonth()+1}月${new Date().getDate()}日。広島の農家向けに今注目の野菜トレンドを検索して。`}]})
+    });
+    const d=await r.json();
+    const txt=d.content?.map(b=>b.text||'').join('')||'[]';
+    let items;try{items=JSON.parse(txt.replace(/```json|```/g,'').trim());}catch(e){items=staticSuggests;}
+    renderSuggests(items);
+  }catch(e){renderSuggests(staticSuggests);}
+  btn.disabled=false;btn.textContent='🔍 今日のトレンドを取得する';
+}
+function renderSuggests(items){
+  document.getElementById('suggestList').innerHTML=items.map(s=>`
+    <div class="scard"><span class="stag ${s.tag}">${s.label}</span><div class="sname">${s.ico} ${s.name}</div><div class="sdesc">${s.desc}</div></div>`).join('');
+}
+function sw(tab){
+  ['crops','suggest','log'].forEach(t=>{document.getElementById('t-'+t).classList.toggle('active',t===tab);});
+  document.querySelectorAll('.tab').forEach((t,i)=>{t.classList.toggle('active',['crops','suggest','log'][i]===tab);});
+}
+renderSuggests(staticSuggests);loadLogs();renderCrops();
+</script>
+</body>
+</html>
