@@ -30,6 +30,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .chevron.open{transform:rotate(180deg);}
 .detail{margin-top:12px;border-top:1px solid #f0f0f0;padding-top:12px;display:none;}
 .detail.open{display:block;}
+.prev-record{background:#f9f9f6;border-radius:10px;padding:10px;margin-bottom:12px;border:1px solid #e8e8e0;}
+.prev-title{font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;}
+.prev-photo{width:100%;max-height:120px;object-fit:cover;border-radius:8px;margin-bottom:6px;}
+.prev-memo{font-size:12px;color:#555;line-height:1.5;}
+.prev-date{font-size:11px;color:#aaa;margin-top:4px;}
 .lbl{font-size:11px;color:#888;margin-bottom:4px;font-weight:500;}
 textarea{width:100%;height:64px;font-size:13px;resize:none;border:1px solid #e0e0e0;border-radius:10px;padding:8px;font-family:inherit;margin-bottom:8px;}
 input[type=text]{width:100%;font-size:13px;border:1px solid #e0e0e0;border-radius:10px;padding:8px 10px;margin-bottom:8px;font-family:inherit;}
@@ -43,7 +48,7 @@ input[type=text]{width:100%;font-size:13px;border:1px solid #e0e0e0;border-radiu
 .photo-input{display:none;}
 .abtn{width:100%;padding:13px;font-size:14px;font-weight:600;cursor:pointer;border-radius:12px;border:none;background:#1D9E75;color:#fff;margin-bottom:8px;}
 .abtn:disabled{opacity:0.5;cursor:default;}
-.sbtn{width:100%;padding:11px;font-size:13px;cursor:pointer;border-radius:12px;border:1px solid #ddd;background:#fff;color:#333;}
+.sbtn{width:100%;padding:11px;font-size:13px;cursor:pointer;border-radius:12px;border:1px solid #ddd;background:#fff;color:#333;margin-bottom:8px;}
 .ai-box{background:#f0faf5;border-radius:12px;padding:1rem;margin-top:8px;border:1px solid #c8e6d6;}
 .ai-lbl{font-size:10px;font-weight:700;color:#1D9E75;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:6px;}
 .ai-txt{font-size:13px;color:#1a1a1a;line-height:1.7;white-space:pre-wrap;}
@@ -55,6 +60,9 @@ input[type=text]{width:100%;font-size:13px;border:1px solid #e0e0e0;border-radiu
 .sdesc{font-size:12px;color:#666;margin-top:4px;line-height:1.6;}
 .trend-btn{width:100%;padding:13px;font-size:13px;cursor:pointer;border-radius:12px;border:1px solid #ddd;background:#fff;color:#333;margin-bottom:1rem;font-family:inherit;}
 .trend-btn:disabled{opacity:0.5;}
+.log-filter{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px;}
+.filter-btn{flex:none;padding:5px 12px;border-radius:20px;border:1px solid #ddd;font-size:12px;cursor:pointer;background:#fff;color:#666;white-space:nowrap;}
+.filter-btn.active{background:#1D9E75;color:#fff;border-color:#1D9E75;}
 .log-list{display:flex;flex-direction:column;gap:10px;}
 .log-item{background:#fff;border:1px solid #e8e8e8;border-radius:16px;padding:12px;}
 .log-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
@@ -63,8 +71,18 @@ input[type=text]{width:100%;font-size:13px;border:1px solid #e0e0e0;border-radiu
 .log-photo{width:100%;max-height:160px;object-fit:cover;border-radius:10px;margin-bottom:8px;}
 .log-memo{font-size:12px;color:#555;line-height:1.5;margin-top:4px;}
 .log-ai{font-size:11px;color:#888;margin-top:6px;border-top:1px solid #f0f0f0;padding-top:6px;line-height:1.5;}
+.log-actions{display:flex;gap:8px;margin-top:8px;border-top:1px solid #f0f0f0;padding-top:8px;}
+.edit-btn{flex:1;padding:7px;font-size:12px;cursor:pointer;border-radius:8px;border:1px solid #1D9E75;background:#fff;color:#1D9E75;font-family:inherit;}
+.del-btn2{flex:1;padding:7px;font-size:12px;cursor:pointer;border-radius:8px;border:1px solid #ddd;background:#fff;color:#aaa;font-family:inherit;}
+.edit-modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:100;padding:1rem;align-items:center;justify-content:center;}
+.edit-modal.open{display:flex;}
+.edit-box{background:#fff;border-radius:16px;padding:1.25rem;width:100%;max-width:440px;max-height:90vh;overflow-y:auto;}
+.edit-box h3{font-size:15px;font-weight:600;margin-bottom:12px;}
+.edit-photo-preview{width:100%;max-height:150px;object-fit:cover;border-radius:10px;margin-bottom:8px;display:none;}
+.modal-btns{display:flex;gap:8px;margin-top:12px;}
+.modal-save{flex:2;padding:11px;font-size:14px;font-weight:600;cursor:pointer;border-radius:12px;border:none;background:#1D9E75;color:#fff;}
+.modal-cancel{flex:1;padding:11px;font-size:13px;cursor:pointer;border-radius:12px;border:1px solid #ddd;background:#fff;color:#333;}
 .empty{font-size:13px;color:#aaa;text-align:center;padding:2rem 0;}
-.del-btn{font-size:18px;color:#ccc;background:none;border:none;cursor:pointer;padding:0;line-height:1;}
 </style>
 </head>
 <body>
@@ -86,9 +104,30 @@ input[type=text]{width:100%;font-size:13px;border:1px solid #e0e0e0;border-radiu
     <div id="suggestList" class="suggest-list"></div>
   </div>
   <div id="t-log" class="sec">
+    <div class="log-filter" id="logFilter"></div>
     <div id="logList"></div>
   </div>
 </div>
+
+<div class="edit-modal" id="editModal">
+  <div class="edit-box">
+    <h3 id="editTitle">記録を編集</h3>
+    <img class="edit-photo-preview" id="editPhotoPreview">
+    <div class="photo-upload" onclick="document.getElementById('editPhotoInput').click()" style="margin-bottom:8px;">📷 写真を変更する</div>
+    <input type="file" accept="image/*" class="photo-input" id="editPhotoInput" onchange="onEditPhoto(this)">
+    <div class="lbl">メモ</div>
+    <textarea id="editMemo" placeholder="メモを入力…"></textarea>
+    <div class="row2">
+      <div><div class="lbl">高さ（cm）</div><input type="text" id="editHeight" placeholder="例：20"></div>
+      <div><div class="lbl">気になること</div><input type="text" id="editConcern" placeholder="例：虫・変色"></div>
+    </div>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeEdit()">キャンセル</button>
+      <button class="modal-save" onclick="saveEdit()">保存する</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const API_KEY='';
 const crops=[
@@ -104,22 +143,34 @@ const staticSuggests=[
   {tag:'tt',label:'海外トレンド',ico:'🫐',name:'スーパーフード系ベリー類',desc:'アメリカではブルーベリーが健康志向で急上昇中。国内でも注目されはじめています。'},
   {tag:'tp',label:'話題のネタ',ico:'🫘',name:'そら豆（絵本ブーム）',desc:'「そらまめくんのベッド」シリーズが再ブーム。収穫体験イベントで子連れファミリーに刺さります。'},
 ];
-let openId=null,logs=[],photoDataMap={};
-function loadLogs(){try{const d=localStorage.getItem('hatake-logs-v3');if(d)logs=JSON.parse(d);}catch(e){logs=[];}renderLog();}
+let openId=null,logs=[],photoDataMap={},editingId=null,editPhotoData=null,currentFilter='all';
+
+function loadLogs(){try{const d=localStorage.getItem('hatake-logs-v3');if(d)logs=JSON.parse(d);}catch(e){logs=[];}renderLog();renderFilter();}
 function saveLogs(){try{localStorage.setItem('hatake-logs-v3',JSON.stringify(logs));}catch(e){}}
 function fmtDate(d){const dt=new Date(d);return`${dt.getFullYear()}/${String(dt.getMonth()+1).padStart(2,'0')}/${String(dt.getDate()).padStart(2,'0')}`;}
+function getLastLog(cropId){return logs.find(l=>l.cropId===cropId);}
+
 function renderCrops(){
-  document.getElementById('cropList').innerHTML=crops.map(c=>`
-    <div class="crop-card ${openId===c.id?'open':''}" id="cc-${c.id}">
+  document.getElementById('cropList').innerHTML=crops.map(c=>{
+    const last=getLastLog(c.id);
+    return`<div class="crop-card ${openId===c.id?'open':''}" id="cc-${c.id}">
       <div class="crop-row" onclick="toggle('${c.id}')">
         <div class="crop-ico">${c.ico}</div>
         <div class="crop-info"><div class="crop-name">${c.name}</div><div class="crop-st"><span class="sdot ${c.dot}"></span>${c.status}</div></div>
         <div class="chevron ${openId===c.id?'open':''}">▼</div>
       </div>
       <div class="detail ${openId===c.id?'open':''}" id="d-${c.id}">
+        ${last?`<div class="prev-record">
+          <div class="prev-title">前回の記録</div>
+          ${last.photo?`<img class="prev-photo" src="${last.photo}">`:''}
+          ${last.memo?`<div class="prev-memo">📝 ${last.memo}</div>`:''}
+          ${last.height?`<div class="prev-memo">📏 高さ：${last.height}cm</div>`:''}
+          ${last.concern?`<div class="prev-memo">⚠️ ${last.concern}</div>`:''}
+          <div class="prev-date">${fmtDate(last.date)}</div>
+        </div>`:''}
         <div class="photo-area">
           <div class="lbl">写真を追加（任意）</div>
-          <input type="file" accept="image/*"  class="photo-input" id="pi-${c.id}" onchange="onPhoto('${c.id}',this)">
+          <input type="file" accept="image/*" class="photo-input" id="pi-${c.id}" onchange="onPhoto('${c.id}',this)">
           <img class="photo-preview" id="pp-${c.id}">
           <div class="photo-upload" onclick="document.getElementById('pi-${c.id}').click()">📷 写真を撮影・選択する</div>
         </div>
@@ -133,8 +184,10 @@ function renderCrops(){
         <button class="sbtn" onclick="saveLog('${c.id}')">📝 今日の記録を保存する</button>
         <div id="air-${c.id}"></div>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
+
 function onPhoto(id,input){
   const file=input.files[0];if(!file)return;
   const reader=new FileReader();
@@ -145,7 +198,9 @@ function onPhoto(id,input){
     input.nextElementSibling.nextElementSibling.textContent='📷 写真を変更する';
   };reader.readAsDataURL(file);
 }
+
 function toggle(id){openId=openId===id?null:id;renderCrops();}
+
 async function askAI(id){
   const c=crops.find(x=>x.id===id);
   const memo=document.getElementById('memo-'+id).value||c.stage;
@@ -172,6 +227,7 @@ async function askAI(id){
   }catch(e){res.innerHTML='<div class="ai-box"><div class="ai-lbl">AI農業アドバイザー</div><div class="ai-txt">エラーが発生しました。</div></div>';}
   btn.disabled=false;btn.textContent='AIにアドバイスを聞く';
 }
+
 async function saveLog(id){
   const c=crops.find(x=>x.id===id);
   const memo=document.getElementById('memo-'+id).value;
@@ -181,23 +237,89 @@ async function saveLog(id){
   const photo=photoDataMap[id]||null;
   if(!memo&&!h&&!q&&!photo){alert('写真かメモを入れてください');return;}
   logs.unshift({id:Date.now(),cropId:id,cropName:c.name,cropIco:c.ico,date:new Date().toISOString(),memo,height:h,concern:q,aiAdvice:aiTxt,photo});
-  saveLogs();renderLog();delete photoDataMap[id];
+  saveLogs();renderLog();renderFilter();renderCrops();
+  delete photoDataMap[id];
   alert(`${c.name}の記録を保存しました！`);
 }
+
+function renderFilter(){
+  const cropIds=['all',...new Set(logs.map(l=>l.cropId))];
+  const el=document.getElementById('logFilter');
+  el.innerHTML=cropIds.map(id=>{
+    if(id==='all')return`<button class="filter-btn ${currentFilter==='all'?'active':''}" onclick="setFilter('all')">すべて</button>`;
+    const c=crops.find(x=>x.id===id);
+    if(!c)return'';
+    return`<button class="filter-btn ${currentFilter===id?'active':''}" onclick="setFilter('${id}')">${c.ico} ${c.name}</button>`;
+  }).join('');
+}
+
+function setFilter(id){currentFilter=id;renderFilter();renderLog();}
+
 function renderLog(){
   const el=document.getElementById('logList');
-  if(!logs.length){el.innerHTML='<div class="empty">まだ記録がありません。<br>作物タブからメモや写真を保存してみましょう。</div>';return;}
-  el.innerHTML='<div class="log-list">'+logs.map(l=>`
+  const filtered=currentFilter==='all'?logs:logs.filter(l=>l.cropId===currentFilter);
+  if(!filtered.length){el.innerHTML='<div class="empty">記録がありません。</div>';return;}
+  el.innerHTML='<div class="log-list">'+filtered.map(l=>`
     <div class="log-item">
-      <div class="log-head"><div class="log-crop">${l.cropIco} ${l.cropName}</div><div style="display:flex;align-items:center;gap:8px"><div class="log-date">${fmtDate(l.date)}</div><button class="del-btn" onclick="deleteLog(${l.id})">×</button></div></div>
-      ${l.photo?`<img class="log-photo" src="${l.photo}">` :''}
+      <div class="log-head"><div class="log-crop">${l.cropIco} ${l.cropName}</div><div class="log-date">${fmtDate(l.date)}${l.edited?' ✏️':''}</div></div>
+      ${l.photo?`<img class="log-photo" src="${l.photo}">`:''}
       ${l.memo?`<div class="log-memo">📝 ${l.memo}</div>`:''}
       ${l.height?`<div class="log-memo">📏 高さ：${l.height}cm</div>`:''}
       ${l.concern?`<div class="log-memo">⚠️ ${l.concern}</div>`:''}
       ${l.aiAdvice?`<div class="log-ai">💬 ${l.aiAdvice.slice(0,100)}…</div>`:''}
+      <div class="log-actions">
+        <button class="edit-btn" onclick="openEdit(${l.id})">✏️ 編集・追記</button>
+        <button class="del-btn2" onclick="deleteLog(${l.id})">削除</button>
+      </div>
     </div>`).join('')+'</div>';
 }
-function deleteLog(id){if(!confirm('この記録を削除しますか？'))return;logs=logs.filter(l=>l.id!==id);saveLogs();renderLog();}
+
+function openEdit(id){
+  const l=logs.find(x=>x.id===id);
+  if(!l)return;
+  editingId=id;editPhotoData=null;
+  document.getElementById('editTitle').textContent=`${l.cropIco} ${l.cropName}の記録を編集`;
+  document.getElementById('editMemo').value=l.memo||'';
+  document.getElementById('editHeight').value=l.height||'';
+  document.getElementById('editConcern').value=l.concern||'';
+  const prev=document.getElementById('editPhotoPreview');
+  if(l.photo){prev.src=l.photo;prev.style.display='block';}
+  else{prev.style.display='none';}
+  document.getElementById('editModal').classList.add('open');
+}
+
+function onEditPhoto(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    editPhotoData=e.target.result;
+    const prev=document.getElementById('editPhotoPreview');
+    prev.src=editPhotoData;prev.style.display='block';
+  };reader.readAsDataURL(file);
+}
+
+function saveEdit(){
+  const idx=logs.findIndex(x=>x.id===editingId);
+  if(idx===-1)return;
+  logs[idx].memo=document.getElementById('editMemo').value;
+  logs[idx].height=document.getElementById('editHeight').value;
+  logs[idx].concern=document.getElementById('editConcern').value;
+  if(editPhotoData)logs[idx].photo=editPhotoData;
+  logs[idx].edited=new Date().toISOString();
+  saveLogs();renderLog();renderCrops();closeEdit();
+}
+
+function closeEdit(){
+  document.getElementById('editModal').classList.remove('open');
+  editingId=null;editPhotoData=null;
+}
+
+function deleteLog(id){
+  if(!confirm('この記録を削除しますか？'))return;
+  logs=logs.filter(l=>l.id!==id);
+  saveLogs();renderLog();renderFilter();renderCrops();
+}
+
 async function loadTrend(){
   const btn=document.getElementById('trendBtn');
   btn.disabled=true;btn.textContent='トレンドを検索中...';
@@ -218,14 +340,17 @@ async function loadTrend(){
   }catch(e){renderSuggests(staticSuggests);}
   btn.disabled=false;btn.textContent='🔍 今日のトレンドを取得する';
 }
+
 function renderSuggests(items){
   document.getElementById('suggestList').innerHTML=items.map(s=>`
     <div class="scard"><span class="stag ${s.tag}">${s.label}</span><div class="sname">${s.ico} ${s.name}</div><div class="sdesc">${s.desc}</div></div>`).join('');
 }
+
 function sw(tab){
   ['crops','suggest','log'].forEach(t=>{document.getElementById('t-'+t).classList.toggle('active',t===tab);});
   document.querySelectorAll('.tab').forEach((t,i)=>{t.classList.toggle('active',['crops','suggest','log'][i]===tab);});
 }
+
 renderSuggests(staticSuggests);loadLogs();renderCrops();
 </script>
 </body>
