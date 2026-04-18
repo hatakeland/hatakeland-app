@@ -275,7 +275,7 @@ async function askAI(id){
   }else{userContent=textContent;}
   try{
     const d=await callAI({
-      model:'claude-sonnet-4-20250514',max_tokens:600,
+      model:'claude-sonnet-4-5',max_tokens:600,
       system:`あなたは広島県安佐南区の自然農法（菌ちゃん農法）農園「ハタケランド」専属の農業アドバイザーです。写真がある場合は必ず触れてください。回答は以下の3セクションで250字以内：\n【今すぐやること】具体的に1〜2個\n【収穫予測】時期の目安\n【注意点】1つだけ\nやさしく実践的な日本語で。`,
       messages:[{role:'user',content:userContent}]
     });
@@ -402,7 +402,7 @@ async function loadTrend(){
   sl.innerHTML='<div class="ai-box"><div class="ai-lbl">検索中</div><div class="ai-txt">最新のトレンドを調べています...</div></div>';
   try{
     const d=await callAI({
-      model:'claude-sonnet-4-20250514',max_tokens:800,
+      model:'claude-sonnet-4-5',max_tokens:800,
       tools:[{type:'web_search_20250305',name:'web_search'}],
       system:`あなたは農業×エンタメのトレンドリサーチャーです。絵本・アニメ・SNSで話題の野菜、海外ブーム食材、スーパーフード、道の駅で人気の珍しい野菜をリサーチ。結果はJSON配列のみ：[{"tag":"tp","label":"ラベル名","ico":"絵文字","name":"作物名","desc":"100字以内"}] tagはts=旬/tt=海外/tp=話題。JSONのみ返すこと。`,
       messages:[{role:'user',content:`今日は${new Date().getMonth()+1}月${new Date().getDate()}日。広島の農家向けに今注目の野菜トレンドを検索して。`}]
