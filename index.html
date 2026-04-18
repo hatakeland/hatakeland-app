@@ -27,23 +27,19 @@
 body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
 body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background-image:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C8BCA8' fill-opacity='0.12'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");pointer-events:none;z-index:0;}
 .app{max-width:480px;margin:0 auto;padding:0 0 2rem;position:relative;z-index:1;}
-
-/* ヘッダー */
 .hdr{position:relative;overflow:hidden;border-radius:0 0 24px 24px;margin-bottom:1rem;}
 .hdr-bg{background:linear-gradient(160deg,#2D5A3D 0%,#4A7C59 40%,#6B9E7A 70%,#8FB89A 100%);padding:1.5rem 1rem 1.25rem;text-align:center;position:relative;}
-.hdr-bg::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background-image:url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 10 Q55 0 60 10 Q65 20 60 25 Q55 30 50 25 Q45 20 50 10Z' fill='rgba(255,255,255,0.06)'/%3E%3Cpath d='M20 50 Q25 35 35 45 Q45 55 35 60 Q25 65 20 50Z' fill='rgba(255,255,255,0.04)'/%3E%3Cpath d='M70 60 Q80 50 85 65 Q90 80 75 75 Q65 70 70 60Z' fill='rgba(255,255,255,0.05)'/%3E%3Cpath d='M10 20 Q15 10 20 20 Q25 30 15 30 Q5 30 10 20Z' fill='rgba(255,255,255,0.04)'/%3E%3Cpath d='M80 20 Q85 10 90 20 Q95 30 85 28 Q75 26 80 20Z' fill='rgba(255,255,255,0.04)'/%3E%3C/svg%3E");background-size:200px 200px;}
+.hdr-bg::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background-image:url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 10 Q55 0 60 10 Q65 20 60 25 Q55 30 50 25 Q45 20 50 10Z' fill='rgba(255,255,255,0.06)'/%3E%3Cpath d='M20 50 Q25 35 35 45 Q45 55 35 60 Q25 65 20 50Z' fill='rgba(255,255,255,0.04)'/%3E%3Cpath d='M70 60 Q80 50 85 65 Q90 80 75 75 Q65 70 70 60Z' fill='rgba(255,255,255,0.05)'/%3E%3C/svg%3E");background-size:200px 200px;}
 .hdr-logo{width:90px;height:90px;border-radius:50%;border:3px solid rgba(255,255,255,0.6);box-shadow:0 4px 20px rgba(0,0,0,0.2);margin:0 auto 10px;display:block;object-fit:cover;background:#fff;}
 .hdr-title{font-family:'Klee One',cursive;font-size:13px;color:rgba(255,255,255,0.85);letter-spacing:0.15em;background:rgba(0,0,0,0.15);display:inline-block;padding:3px 12px;border-radius:20px;}
-
 .tabs-wrap{padding:0 0.75rem;}
 .tabs{display:flex;gap:0;background:var(--card);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;}
 .tab{flex:1;padding:9px 8px;font-size:12px;cursor:pointer;background:transparent;color:var(--text-mid);border:none;font-family:'Noto Sans JP',sans-serif;font-weight:500;letter-spacing:0.05em;transition:all 0.2s;}
 .tab.active{background:var(--green);color:#fff;}
-
 .sec{display:none;padding:0.75rem;}
 .sec.active{display:block;}
 .crop-list{display:flex;flex-direction:column;gap:10px;}
-.crop-card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color 0.2s;}
+.crop-card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;}
 .crop-card.open{border-color:var(--green);}
 .crop-row{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;}
 .crop-ico{font-size:26px;line-height:1;}
@@ -61,7 +57,6 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background-
 .prev-photos{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px;}
 .prev-thumb{width:60px;height:60px;object-fit:cover;border-radius:6px;}
 .prev-memo{font-size:12px;color:var(--text-mid);line-height:1.6;}
-.prev-date{font-size:10px;color:var(--text-light);margin-top:4px;}
 .lbl{font-size:11px;color:var(--text-mid);margin-bottom:4px;font-weight:500;letter-spacing:0.05em;}
 textarea{width:100%;height:64px;font-size:13px;resize:none;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:8px 10px;font-family:'Noto Sans JP',sans-serif;background:var(--card);color:var(--text);margin-bottom:10px;}
 textarea:focus{outline:none;border-color:var(--green-mid);}
@@ -76,8 +71,10 @@ input:focus{outline:none;border-color:var(--green-mid);}
 .photo-previews{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;}
 .photo-thumb{width:72px;height:72px;object-fit:cover;border-radius:6px;border:1.5px solid var(--border);}
 .photo-input{display:none;}
-.sbtn{width:100%;padding:12px;font-size:13px;font-weight:700;cursor:pointer;border-radius:var(--radius-sm);border:none;background:var(--green);color:#fff;margin-bottom:8px;font-family:'Noto Sans JP',sans-serif;letter-spacing:0.05em;transition:opacity 0.2s;}
+.sbtn{width:100%;padding:12px;font-size:13px;font-weight:700;cursor:pointer;border-radius:var(--radius-sm);border:none;background:var(--green);color:#fff;margin-bottom:8px;font-family:'Noto Sans JP',sans-serif;transition:opacity 0.2s;}
 .sbtn:disabled{opacity:0.5;}
+.add-crop-btn{width:100%;padding:11px;font-size:13px;cursor:pointer;border-radius:var(--radius);border:2px dashed var(--border-dark);background:transparent;color:var(--text-mid);font-family:'Noto Sans JP',sans-serif;transition:all 0.2s;margin-top:4px;}
+.add-crop-btn:hover{border-color:var(--green-mid);color:var(--green);}
 .suggest-list{display:flex;flex-direction:column;gap:10px;}
 .scard{background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);padding:14px;}
 .stag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;margin-bottom:6px;font-weight:700;letter-spacing:0.05em;}
@@ -110,15 +107,21 @@ input:focus{outline:none;border-color:var(--green-mid);}
 .log-actions{display:flex;gap:8px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--border);}
 .edit-btn{flex:1;padding:7px;font-size:11px;cursor:pointer;border-radius:var(--radius-sm);border:1.5px solid var(--green-mid);background:transparent;color:var(--green);font-family:'Noto Sans JP',sans-serif;}
 .del-btn2{flex:none;padding:7px 12px;font-size:11px;cursor:pointer;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:transparent;color:var(--text-light);font-family:'Noto Sans JP',sans-serif;}
-.edit-modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(44,36,22,0.6);z-index:100;padding:1rem;align-items:center;justify-content:center;}
-.edit-modal.open{display:flex;}
-.edit-box{background:var(--bg);border-radius:var(--radius);padding:1.25rem;width:100%;max-width:440px;max-height:90vh;overflow-y:auto;border:1.5px solid var(--border-dark);}
-.edit-box h3{font-family:'Klee One',cursive;font-size:16px;font-weight:600;color:var(--green);margin-bottom:12px;}
+.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(44,36,22,0.6);z-index:100;padding:1rem;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:var(--bg);border-radius:var(--radius);padding:1.25rem;width:100%;max-width:440px;max-height:90vh;overflow-y:auto;border:1.5px solid var(--border-dark);}
+.modal-box h3{font-family:'Klee One',cursive;font-size:16px;font-weight:600;color:var(--green);margin-bottom:12px;}
 .edit-photo-previews{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;}
 .edit-photo-thumb{width:72px;height:72px;object-fit:cover;border-radius:6px;border:1.5px solid var(--border);}
 .modal-btns{display:flex;gap:8px;margin-top:12px;}
 .modal-save{flex:2;padding:11px;font-size:13px;font-weight:700;cursor:pointer;border-radius:var(--radius-sm);border:none;background:var(--green);color:#fff;font-family:'Noto Sans JP',sans-serif;}
 .modal-cancel{flex:1;padding:11px;font-size:13px;cursor:pointer;border-radius:var(--radius-sm);border:1.5px solid var(--border-dark);background:transparent;color:var(--text-mid);font-family:'Noto Sans JP',sans-serif;}
+.ico-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
+.ico-btn{width:42px;height:42px;font-size:22px;cursor:pointer;border-radius:8px;border:1.5px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:center;}
+.ico-btn.selected{border-color:var(--green);background:var(--green-light);}
+.status-sel{display:flex;gap:6px;margin-bottom:10px;}
+.status-btn{flex:1;padding:7px;font-size:11px;cursor:pointer;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:var(--card);color:var(--text-mid);font-family:'Noto Sans JP',sans-serif;text-align:center;}
+.status-btn.selected{border-color:var(--green);background:var(--green-light);color:var(--green);font-weight:700;}
 .empty{font-size:13px;color:var(--text-light);text-align:center;padding:2.5rem 0;}
 .loading{font-size:13px;color:var(--text-light);text-align:center;padding:2rem 0;}
 </style>
@@ -138,9 +141,9 @@ input:focus{outline:none;border-color:var(--green-mid);}
       <button class="tab" onclick="sw('log')">記録帳</button>
     </div>
   </div>
-
   <div id="t-crops" class="sec active">
     <div class="crop-list" id="cropList"></div>
+    <button class="add-crop-btn" onclick="openAddCrop()">＋ 新しい作物を追加する</button>
   </div>
   <div id="t-suggest" class="sec">
     <div id="suggestList" class="suggest-list"></div>
@@ -152,8 +155,9 @@ input:focus{outline:none;border-color:var(--green-mid);}
   </div>
 </div>
 
-<div class="edit-modal" id="editModal">
-  <div class="edit-box">
+<!-- 記録編集モーダル -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal-box">
     <h3 id="editTitle">記録を編集</h3>
     <div class="edit-photo-previews" id="editPhotoPreviews"></div>
     <div class="photo-upload" onclick="document.getElementById('editPhotoInput').click()" style="margin-bottom:10px;">📷 写真を追加・変更する</div>
@@ -173,18 +177,43 @@ input:focus{outline:none;border-color:var(--green-mid);}
   </div>
 </div>
 
+<!-- 作物追加モーダル -->
+<div class="modal-overlay" id="addCropModal">
+  <div class="modal-box">
+    <h3>新しい作物を追加</h3>
+    <div class="lbl">アイコンを選ぶ</div>
+    <div class="ico-grid" id="icoGrid"></div>
+    <div class="lbl">作物名</div>
+    <input type="text" id="newCropName" placeholder="例：ミニトマト">
+    <div class="lbl">状態</div>
+    <div class="status-sel" id="statusSel">
+      <button class="status-btn selected" onclick="selectStatus('生育中')">生育中</button>
+      <button class="status-btn" onclick="selectStatus('収穫近し')">収穫近し</button>
+      <button class="status-btn" onclick="selectStatus('発芽待ち')">発芽待ち</button>
+      <button class="status-btn" onclick="selectStatus('収穫済み')">収穫済み</button>
+    </div>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeAddCrop()">キャンセル</button>
+      <button class="modal-save" onclick="saveAddCrop()">追加する</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const SUPABASE_URL='https://bwhngwankpsejqeplwuh.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ3aG5nd2Fua3BzZWpxZXBsd3VoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NTE3MTgsImV4cCI6MjA5MjAyNzcxOH0.oyRD5PjPbKMQZL0XneEUzQVYSEKx2fkyLW7lQYiu2WE';
 const AI_PROXY=SUPABASE_URL+'/functions/v1/ai-proxy';
 
-const crops=[
-  {id:'snap',ico:'🫛',name:'スナップえんどう',status:'生育中',dot:'dg',stage:'花が咲き始めた頃'},
-  {id:'fava',ico:'🫘',name:'そら豆',status:'生育中',dot:'dg',stage:'茎が伸びてきた段階'},
-  {id:'onion',ico:'🧅',name:'早生玉ねぎ',status:'収穫近し',dot:'da',stage:'葉が倒れ始めている'},
-  {id:'garlic',ico:'🧄',name:'にんにく',status:'生育中',dot:'dg',stage:'葉が伸びている'},
-  {id:'mayo',ico:'🥔',name:'じゃがいも（メークイーン）',status:'発芽待ち',dot:'db',stage:'植え付けから2週間'},
-  {id:'andes',ico:'🥔',name:'じゃがいも（アンデス赤）',status:'発芽待ち',dot:'db',stage:'植え付けから2週間'},
+const ICONS=['🍅','🫛','🫘','🧅','🧄','🥔','🌽','🥕','🥬','🥦','🍆','🫑','🌶️','🥒','🌿','🍠','🫚','🫐','🍓','🍋'];
+const STATUS_DOTS={'生育中':'dg','収穫近し':'da','発芽待ち':'db','収穫済み':'da'};
+
+let crops=[
+  {id:'snap',ico:'🫛',name:'スナップえんどう',status:'生育中',stage:'花が咲き始めた頃'},
+  {id:'fava',ico:'🫘',name:'そら豆',status:'生育中',stage:'茎が伸びてきた段階'},
+  {id:'onion',ico:'🧅',name:'早生玉ねぎ',status:'収穫近し',stage:'葉が倒れ始めている'},
+  {id:'garlic',ico:'🧄',name:'にんにく',status:'生育中',stage:'葉が伸びている'},
+  {id:'mayo',ico:'🥔',name:'じゃがいも（メークイーン）',status:'発芽待ち',stage:'植え付けから2週間'},
+  {id:'andes',ico:'🥔',name:'じゃがいも（アンデス赤）',status:'発芽待ち',stage:'植え付けから2週間'},
 ];
 
 const defaultSuggests=[
@@ -194,6 +223,14 @@ const defaultSuggests=[
 ];
 
 let openId=null,logs=[],photoDataMap={},editingId=null,editPhotosData=[],currentFilter='all';
+let selectedIco=ICONS[0],selectedStatus='生育中';
+let moreContents={};
+
+function loadCrops(){
+  const saved=localStorage.getItem('hatake-crops');
+  if(saved)crops=JSON.parse(saved);
+}
+function saveCropsLocal(){localStorage.setItem('hatake-crops',JSON.stringify(crops));}
 
 async function sbFetch(path,opts={}){
   const res=await fetch(SUPABASE_URL+'/rest/v1/'+path,{
@@ -226,6 +263,7 @@ function fmtDate(d){if(!d)return'';return d.slice(0,10).replace(/-/g,'/');}
 function todayStr(){const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 function getLastLog(cropId){return logs.find(l=>l.crop_id===cropId);}
 function getRecentLogs(cropId,n=5){return logs.filter(l=>l.crop_id===cropId).slice(0,n);}
+function dotClass(status){return STATUS_DOTS[status]||'dg';}
 
 function renderCrops(){
   document.getElementById('cropList').innerHTML=crops.map(c=>{
@@ -236,7 +274,7 @@ function renderCrops(){
         <div class="crop-ico">${c.ico}</div>
         <div class="crop-info">
           <div class="crop-name">${c.name}</div>
-          <div class="crop-st"><span class="sdot ${c.dot}"></span>${c.status}</div>
+          <div class="crop-st"><span class="sdot ${dotClass(c.status)}"></span>${c.status}</div>
         </div>
         <div class="chevron ${openId===c.id?'open':''}">▼</div>
       </div>
@@ -263,7 +301,6 @@ function renderCrops(){
           <div><div class="lbl">気になること</div><input type="text" id="q-${c.id}" placeholder="例：虫・変色"></div>
         </div>
         <button class="sbtn" onclick="saveLog('${c.id}')">📝 記録を保存する</button>
-        <div id="air-${c.id}"></div>
       </div>
     </div>`;
   }).join('');
@@ -316,21 +353,18 @@ async function askAIFromLog(logId){
   btn.disabled=true;btn.textContent='考え中...';
   box.innerHTML='<div class="log-ai-lbl">AI農業アドバイザー</div><div class="log-ai-txt">過去の記録を分析中...</div>';
   box.style.display='block';
-
   const recentLogs=getRecentLogs(l.crop_id,5);
   const historyText=recentLogs.map(r=>`[${fmtDate(r.log_date)}] ${r.memo||''}${r.height?' サイズ:'+r.height:''}${r.concern?' 気になること:'+r.concern:''}`).join('\n');
   const photos=l.photo?JSON.parse(l.photo):[];
   const textContent=`作物：${l.crop_name}\n\n【今回の記録 ${fmtDate(l.log_date)}】\n${l.memo||''}${l.height?'\nサイズ：'+l.height:''}\n${l.concern?'気になること：'+l.concern+'\n':''}\n【過去の記録履歴】\n${historyText}\n\n広島県安佐南区・菌ちゃん農法で栽培。過去の記録を踏まえてアドバイスをお願いします。`;
-
   let userContent=photos.length?[
     ...photos.map(p=>({type:'image',source:{type:'base64',media_type:p.split(';')[0].split(':')[1],data:p.split(',')[1]}})),
     {type:'text',text:textContent}
   ]:textContent;
-
   try{
     const d=await callAI({
       model:'claude-sonnet-4-5',max_tokens:600,
-      system:`あなたは広島県安佐南区の自然農法（菌ちゃん農法）農園「ハタケランド」専属の農業アドバイザーです。過去の記録履歴を必ず参考にして、文脈を踏まえた具体的なアドバイスをしてください。写真がある場合は必ず触れてください。回答は以下の3セクションで300字以内：\n【状況の読み取り】過去の記録から見えること\n【今すぐやること】具体的に1〜2個\n【次回の確認ポイント】\nやさしく実践的な日本語で。`,
+      system:`あなたは広島県安佐南区の自然農法（菌ちゃん農法）農園「ハタケランド」専属の農業アドバイザーです。過去の記録履歴を必ず参考にして文脈を踏まえた具体的なアドバイスをしてください。写真がある場合は必ず触れてください。回答は以下の3セクションで300字以内：\n【状況の読み取り】過去の記録から見えること\n【今すぐやること】具体的に1〜2個\n【次回の確認ポイント】\nやさしく実践的な日本語で。`,
       messages:[{role:'user',content:userContent}]
     });
     const txt=d.content?.map(b=>b.text||'').join('')||'取得できませんでした';
@@ -349,8 +383,8 @@ function renderFilter(){
   document.getElementById('logFilter').innerHTML=cropIds.map(id=>{
     if(id==='all')return`<button class="filter-btn ${currentFilter==='all'?'active':''}" onclick="setFilter('all')">すべて</button>`;
     const c=crops.find(x=>x.id===id);
-    if(!c)return'';
-    return`<button class="filter-btn ${currentFilter===id?'active':''}" onclick="setFilter('${id}')">${c.ico} ${c.name}</button>`;
+    const name=c?c.ico+' '+c.name:id;
+    return`<button class="filter-btn ${currentFilter===id?'active':''}" onclick="setFilter('${id}')">${name}</button>`;
   }).join('');
 }
 
@@ -363,7 +397,7 @@ function renderLog(){
   el.innerHTML='<div class="log-list">'+filtered.map(l=>{
     const photos=l.photo?JSON.parse(l.photo):[];
     const hasAI=l.ai_advice&&l.ai_advice.length>0;
-    return`<div class="log-item">
+    return`<div class="log-item" id="logitem-${l.id}">
       <div class="log-head">
         <div class="log-crop">${l.crop_ico} ${l.crop_name}</div>
         <div class="log-date">${fmtDate(l.log_date)}</div>
@@ -433,43 +467,64 @@ function closeEdit(){
 async function deleteLog(id){
   if(!confirm('この記録を削除しますか？'))return;
   try{
-    await sbFetch(`logs?id=eq.${id}`,{method:'DELETE'});
-    await loadLogs();
-  }catch(e){alert('削除に失敗しました。');}
+    await sbFetch(`logs?id=eq.${id}`,{method:'DELETE',headers:{'Prefer':'return=minimal'}});
+    logs=logs.filter(l=>l.id!==id);
+    renderLog();
+    renderFilter();
+    renderCrops();
+  }catch(e){alert('削除に失敗しました。'+e.message);}
 }
 
-let moreContents={};
+// 作物追加
+function openAddCrop(){
+  selectedIco=ICONS[0];selectedStatus='生育中';
+  document.getElementById('newCropName').value='';
+  document.getElementById('icoGrid').innerHTML=ICONS.map(ico=>`<button class="ico-btn ${ico===selectedIco?'selected':''}" onclick="selectIco('${ico}')">${ico}</button>`).join('');
+  document.querySelectorAll('.status-btn').forEach(b=>{b.classList.toggle('selected',b.textContent===selectedStatus);});
+  document.getElementById('addCropModal').classList.add('open');
+}
+
+function selectIco(ico){
+  selectedIco=ico;
+  document.querySelectorAll('.ico-btn').forEach(b=>{b.classList.toggle('selected',b.textContent===ico);});
+}
+
+function selectStatus(s){
+  selectedStatus=s;
+  document.querySelectorAll('.status-btn').forEach(b=>{b.classList.toggle('selected',b.textContent===s);});
+}
+
+function saveAddCrop(){
+  const name=document.getElementById('newCropName').value.trim();
+  if(!name){alert('作物名を入力してください');return;}
+  const id='crop_'+Date.now();
+  crops.push({id,ico:selectedIco,name,status:selectedStatus,stage:'新しく追加した作物'});
+  saveCropsLocal();
+  renderCrops();
+  closeAddCrop();
+}
+
+function closeAddCrop(){document.getElementById('addCropModal').classList.remove('open');}
+
 async function toggleMore(idx,name){
   const content=document.getElementById('smore-'+idx);
   const btn=document.getElementById('smorebtn-'+idx);
   if(content.classList.contains('open')){
-    content.classList.remove('open');
-    btn.textContent='MORE +';
-    return;
+    content.classList.remove('open');btn.textContent='MORE +';return;
   }
   if(moreContents[idx]){
-    content.innerHTML=moreContents[idx];
-    content.classList.add('open');
-    btn.textContent='LESS −';
-    return;
+    content.innerHTML=moreContents[idx];content.classList.add('open');btn.textContent='LESS −';return;
   }
   btn.disabled=true;btn.textContent='読み込み中...';
   try{
     const d=await callAI({
       model:'claude-sonnet-4-5',max_tokens:400,
-      system:'農業×エンタメの専門家として、簡潔に答えてください。300字以内。',
+      system:'農業×エンタメの専門家として簡潔に答えてください。300字以内。',
       messages:[{role:'user',content:`${name}について：栽培スケジュールとハタケランドのイベント・集客への活用方法を教えてください。`}]
     });
     const txt=d.content?.map(b=>b.text||'').join('')||'情報を取得できませんでした。';
-    moreContents[idx]=txt;
-    content.innerHTML=txt;
-    content.classList.add('open');
-    btn.textContent='LESS −';
-  }catch(e){
-    content.innerHTML='情報を取得できませんでした。';
-    content.classList.add('open');
-    btn.textContent='LESS −';
-  }
+    moreContents[idx]=txt;content.innerHTML=txt;content.classList.add('open');btn.textContent='LESS −';
+  }catch(e){content.innerHTML='情報を取得できませんでした。';content.classList.add('open');btn.textContent='LESS −';}
   btn.disabled=false;
 }
 
@@ -480,13 +535,11 @@ async function loadTrend(){
     const d=await callAI({
       model:'claude-sonnet-4-5',max_tokens:800,
       tools:[{type:'web_search_20250305',name:'web_search'}],
-      system:`あなたは農業×エンタメのトレンドリサーチャーです。絵本・アニメ・SNS・海外ブーム・スーパーフード・道の駅人気品をリサーチ。結果はJSON配列のみ：[{"tag":"tp","label":"ラベル名","ico":"絵文字","name":"作物名","desc":"100字以内"}] tagはts=旬/tt=海外/tp=話題。JSONのみ返すこと。`,
+      system:`農業×エンタメのトレンドリサーチャーです。絵本・アニメ・SNS・海外ブーム・スーパーフード・道の駅人気品をリサーチ。結果はJSON配列のみ：[{"tag":"tp","label":"ラベル名","ico":"絵文字","name":"作物名","desc":"100字以内"}] tagはts=旬/tt=海外/tp=話題。JSONのみ返すこと。`,
       messages:[{role:'user',content:`今日は${new Date().getMonth()+1}月${new Date().getDate()}日。広島の農家向けに今注目の野菜トレンドを4件検索して。`}]
     });
     const txt=d.content?.map(b=>b.text||'').join('')||'[]';
-    let items;
-    try{items=JSON.parse(txt.replace(/```json|```/g,'').trim());}
-    catch(e){items=[];}
+    let items;try{items=JSON.parse(txt.replace(/```json|```/g,'').trim());}catch(e){items=[];}
     renderSuggests([...defaultSuggests,...items]);
   }catch(e){renderSuggests(defaultSuggests);}
   btn.disabled=false;btn.textContent='🔍 最新トレンドを取得する';
@@ -509,7 +562,10 @@ function sw(tab){
   document.querySelectorAll('.tab').forEach((t,i)=>{t.classList.toggle('active',['crops','suggest','log'][i]===tab);});
 }
 
-renderSuggests(defaultSuggests);loadLogs();renderCrops();
+loadCrops();
+renderSuggests(defaultSuggests);
+loadLogs();
+renderCrops();
 </script>
 </body>
 </html>
