@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<link rel="apple-touch-icon" href="icon.png">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🌱 ハタケランド</title>
+<link rel="apple-touch-icon" href="icon.png">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f0;color:#1a1a1a;}
@@ -38,14 +38,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .prev-date{font-size:11px;color:#aaa;margin-top:4px;}
 .lbl{font-size:11px;color:#888;margin-bottom:4px;font-weight:500;}
 textarea{width:100%;height:64px;font-size:13px;resize:none;border:1px solid #e0e0e0;border-radius:10px;padding:8px;font-family:inherit;margin-bottom:8px;}
-input[type=text]{width:100%;font-size:13px;border:1px solid #e0e0e0;border-radius:10px;padding:8px 10px;margin-bottom:8px;font-family:inherit;}
+input[type=text],input[type=date]{width:100%;font-size:13px;border:1px solid #e0e0e0;border-radius:10px;padding:8px 10px;margin-bottom:8px;font-family:inherit;}
 .row2{display:flex;gap:8px;margin-bottom:8px;}
 .row2>div{flex:1;}
 .row2 input{margin-bottom:0;}
 .photo-area{margin-bottom:10px;}
 .photo-upload{width:100%;padding:12px;border:2px dashed #ddd;border-radius:12px;background:#fafafa;text-align:center;cursor:pointer;font-size:13px;color:#888;}
 .photo-upload:hover{border-color:#1D9E75;color:#1D9E75;}
-.photo-preview{width:100%;max-height:200px;object-fit:cover;border-radius:12px;margin-bottom:8px;display:none;}
+.photo-previews{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}
+.photo-thumb{width:80px;height:80px;object-fit:cover;border-radius:8px;}
 .photo-input{display:none;}
 .abtn{width:100%;padding:13px;font-size:14px;font-weight:600;cursor:pointer;border-radius:12px;border:none;background:#1D9E75;color:#fff;margin-bottom:8px;}
 .abtn:disabled{opacity:0.5;cursor:default;}
@@ -69,7 +70,8 @@ input[type=text]{width:100%;font-size:13px;border:1px solid #e0e0e0;border-radiu
 .log-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
 .log-crop{font-size:13px;font-weight:600;}
 .log-date{font-size:11px;color:#aaa;}
-.log-photo{width:100%;max-height:160px;object-fit:cover;border-radius:10px;margin-bottom:8px;}
+.log-photos{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}
+.log-photo{width:80px;height:80px;object-fit:cover;border-radius:8px;}
 .log-memo{font-size:12px;color:#555;line-height:1.5;margin-top:4px;}
 .log-ai{font-size:11px;color:#888;margin-top:6px;border-top:1px solid #f0f0f0;padding-top:6px;line-height:1.5;}
 .log-actions{display:flex;gap:8px;margin-top:8px;border-top:1px solid #f0f0f0;padding-top:8px;}
@@ -79,11 +81,13 @@ input[type=text]{width:100%;font-size:13px;border:1px solid #e0e0e0;border-radiu
 .edit-modal.open{display:flex;}
 .edit-box{background:#fff;border-radius:16px;padding:1.25rem;width:100%;max-width:440px;max-height:90vh;overflow-y:auto;}
 .edit-box h3{font-size:15px;font-weight:600;margin-bottom:12px;}
-.edit-photo-preview{width:100%;max-height:150px;object-fit:cover;border-radius:10px;margin-bottom:8px;display:none;}
+.edit-photo-previews{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}
+.edit-photo-thumb{width:80px;height:80px;object-fit:cover;border-radius:8px;}
 .modal-btns{display:flex;gap:8px;margin-top:12px;}
 .modal-save{flex:2;padding:11px;font-size:14px;font-weight:600;cursor:pointer;border-radius:12px;border:none;background:#1D9E75;color:#fff;}
 .modal-cancel{flex:1;padding:11px;font-size:13px;cursor:pointer;border-radius:12px;border:1px solid #ddd;background:#fff;color:#333;}
 .empty{font-size:13px;color:#aaa;text-align:center;padding:2rem 0;}
+.loading{font-size:13px;color:#aaa;text-align:center;padding:2rem 0;}
 </style>
 </head>
 <body>
@@ -113,9 +117,11 @@ input[type=text]{width:100%;font-size:13px;border:1px solid #e0e0e0;border-radiu
 <div class="edit-modal" id="editModal">
   <div class="edit-box">
     <h3 id="editTitle">記録を編集</h3>
-    <img class="edit-photo-preview" id="editPhotoPreview">
-    <div class="photo-upload" onclick="document.getElementById('editPhotoInput').click()" style="margin-bottom:8px;">📷 写真を変更する</div>
-    <input type="file" accept="image/*" class="photo-input" id="editPhotoInput" onchange="onEditPhoto(this)">
+    <div class="edit-photo-previews" id="editPhotoPreviews"></div>
+    <div class="photo-upload" onclick="document.getElementById('editPhotoInput').click()" style="margin-bottom:8px;">📷 写真を追加・変更する</div>
+    <input type="file" accept="image/*" multiple class="photo-input" id="editPhotoInput" onchange="onEditPhotos(this)">
+    <div class="lbl">日付</div>
+    <input type="date" id="editDate">
     <div class="lbl">メモ</div>
     <textarea id="editMemo" placeholder="メモを入力…"></textarea>
     <div class="row2">
@@ -130,7 +136,10 @@ input[type=text]{width:100%;font-size:13px;border:1px solid #e0e0e0;border-radiu
 </div>
 
 <script>
-const API_KEY='';
+const SUPABASE_URL='https://PROJECTID.supabase.co';
+const SUPABASE_KEY='PUBLISHABLE_KEY';
+const ANTHROPIC_KEY='ANTHROPIC_API_KEY';
+
 const crops=[
   {id:'snap',ico:'🫛',name:'スナップえんどう',status:'生育中',dot:'dg',stage:'花が咲き始めた頃'},
   {id:'fava',ico:'🫘',name:'そら豆',status:'生育中',dot:'dg',stage:'茎が伸びてきた段階'},
@@ -139,21 +148,49 @@ const crops=[
   {id:'mayo',ico:'🥔',name:'じゃがいも（メークイーン）',status:'発芽待ち',dot:'db',stage:'植え付けから2週間'},
   {id:'andes',ico:'🥔',name:'じゃがいも（アンデス赤）',status:'発芽待ち',dot:'db',stage:'植え付けから2週間'},
 ];
+
 const staticSuggests=[
   {tag:'ts',label:'旬の提案',ico:'🌽',name:'とうもろこし',desc:'5月上旬が種まきの適期。収穫まで約3ヶ月で夏イベントにぴったり。'},
   {tag:'tt',label:'海外トレンド',ico:'🫐',name:'スーパーフード系ベリー類',desc:'アメリカではブルーベリーが健康志向で急上昇中。国内でも注目されはじめています。'},
   {tag:'tp',label:'話題のネタ',ico:'🫘',name:'そら豆（絵本ブーム）',desc:'「そらまめくんのベッド」シリーズが再ブーム。収穫体験イベントで子連れファミリーに刺さります。'},
 ];
-let openId=null,logs=[],photoDataMap={},editingId=null,editPhotoData=null,currentFilter='all';
 
-function loadLogs(){try{const d=localStorage.getItem('hatake-logs-v3');if(d)logs=JSON.parse(d);}catch(e){logs=[];}renderLog();renderFilter();}
-function saveLogs(){try{localStorage.setItem('hatake-logs-v3',JSON.stringify(logs));}catch(e){}}
-function fmtDate(d){const dt=new Date(d);return`${dt.getFullYear()}/${String(dt.getMonth()+1).padStart(2,'0')}/${String(dt.getDate()).padStart(2,'0')}`;}
-function getLastLog(cropId){return logs.find(l=>l.cropId===cropId);}
+let openId=null,logs=[],photoDataMap={},editingId=null,editPhotosData=[],currentFilter='all';
+
+async function sbFetch(path,opts={}){
+  const res=await fetch(SUPABASE_URL+'/rest/v1/'+path,{
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=representation',...(opts.headers||{})},
+    ...opts
+  });
+  if(!res.ok)throw new Error(await res.text());
+  const txt=await res.text();
+  return txt?JSON.parse(txt):[];
+}
+
+async function loadLogs(){
+  document.getElementById('logList').innerHTML='<div class="loading">読み込み中...</div>';
+  try{
+    logs=await sbFetch('logs?order=log_date.desc,created_at.desc');
+  }catch(e){logs=[];}
+  renderLog();renderFilter();renderCrops();
+}
+
+function fmtDate(d){
+  if(!d)return'';
+  return d.slice(0,10).replace(/-/g,'/');
+}
+
+function todayStr(){
+  const d=new Date();
+  return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function getLastLog(cropId){return logs.find(l=>l.crop_id===cropId);}
 
 function renderCrops(){
   document.getElementById('cropList').innerHTML=crops.map(c=>{
     const last=getLastLog(c.id);
+    const photos=last&&last.photo?JSON.parse(last.photo):[];
     return`<div class="crop-card ${openId===c.id?'open':''}" id="cc-${c.id}">
       <div class="crop-row" onclick="toggle('${c.id}')">
         <div class="crop-ico">${c.ico}</div>
@@ -163,18 +200,20 @@ function renderCrops(){
       <div class="detail ${openId===c.id?'open':''}" id="d-${c.id}">
         ${last?`<div class="prev-record">
           <div class="prev-title">前回の記録</div>
-          ${last.photo?`<img class="prev-photo" src="${last.photo}">`:''}
+          ${photos.length?`<div class="photo-previews">${photos.map(p=>`<img class="photo-thumb" src="${p}">`).join('')}</div>`:''}
           ${last.memo?`<div class="prev-memo">📝 ${last.memo}</div>`:''}
           ${last.height?`<div class="prev-memo">📏 高さ：${last.height}cm</div>`:''}
           ${last.concern?`<div class="prev-memo">⚠️ ${last.concern}</div>`:''}
-          <div class="prev-date">${fmtDate(last.date)}</div>
+          <div class="prev-date">${fmtDate(last.log_date)}</div>
         </div>`:''}
         <div class="photo-area">
-          <div class="lbl">写真を追加（任意）</div>
-          <input type="file" accept="image/*" class="photo-input" id="pi-${c.id}" onchange="onPhoto('${c.id}',this)">
-          <img class="photo-preview" id="pp-${c.id}">
+          <div class="lbl">写真を追加（複数枚可）</div>
+          <input type="file" accept="image/*" multiple class="photo-input" id="pi-${c.id}" onchange="onPhotos('${c.id}',this)">
+          <div class="photo-previews" id="pp-${c.id}"></div>
           <div class="photo-upload" onclick="document.getElementById('pi-${c.id}').click()">📷 写真を撮影・選択する</div>
         </div>
+        <div class="lbl">日付</div>
+        <input type="date" id="dt-${c.id}" value="${todayStr()}">
         <div class="lbl">今日の様子・メモ</div>
         <textarea id="memo-${c.id}" placeholder="例：高さ20cm、葉が黄色い、虫がいた…"></textarea>
         <div class="row2">
@@ -189,15 +228,19 @@ function renderCrops(){
   }).join('');
 }
 
-function onPhoto(id,input){
-  const file=input.files[0];if(!file)return;
-  const reader=new FileReader();
-  reader.onload=e=>{
-    const data=e.target.result;photoDataMap[id]=data;
-    const preview=document.getElementById('pp-'+id);
-    preview.src=data;preview.style.display='block';
-    input.nextElementSibling.nextElementSibling.textContent='📷 写真を変更する';
-  };reader.readAsDataURL(file);
+function onPhotos(id,input){
+  const files=Array.from(input.files);
+  if(!files.length)return;
+  photoDataMap[id]=photoDataMap[id]||[];
+  const preview=document.getElementById('pp-'+id);
+  files.forEach(file=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      photoDataMap[id].push(e.target.result);
+      preview.innerHTML=photoDataMap[id].map(p=>`<img class="photo-thumb" src="${p}">`).join('');
+    };
+    reader.readAsDataURL(file);
+  });
 }
 
 function toggle(id){openId=openId===id?null:id;renderCrops();}
@@ -207,24 +250,30 @@ async function askAI(id){
   const memo=document.getElementById('memo-'+id).value||c.stage;
   const h=document.getElementById('h-'+id).value;
   const q=document.getElementById('q-'+id).value;
-  const photo=photoDataMap[id];
+  const photos=photoDataMap[id]||[];
   const btn=document.getElementById('ab-'+id);
   const res=document.getElementById('air-'+id);
   btn.disabled=true;btn.textContent='考え中...';
   res.innerHTML='<div class="ai-box"><div class="ai-lbl">AI農業アドバイザー</div><div class="ai-txt">分析中...</div></div>';
   const today=new Date();
   const textContent=`作物：${c.name}\n現在の状態：${memo}${h?'\n高さ：'+h+'cm':''}\n${q?'気になること：'+q+'\n':''}今日：${today.getMonth()+1}月${today.getDate()}日\n広島県安佐南区・菌ちゃん農法で栽培。`;
-  let userContent=photo?[{type:'image',source:{type:'base64',media_type:photo.split(';')[0].split(':')[1],data:photo.split(',')[1]}},{type:'text',text:textContent}]:textContent;
+  let userContent;
+  if(photos.length){
+    userContent=[
+      ...photos.map(p=>({type:'image',source:{type:'base64',media_type:p.split(';')[0].split(':')[1],data:p.split(',')[1]}})),
+      {type:'text',text:textContent}
+    ];
+  }else{userContent=textContent;}
   try{
     const r=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',headers:{'Content-Type':'application/json','x-api-key':API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      method:'POST',headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,
         system:`あなたは広島県安佐南区の自然農法（菌ちゃん農法）農園「ハタケランド」専属の農業アドバイザーです。写真がある場合は必ず触れてください。回答は以下の3セクションで250字以内：\n【今すぐやること】具体的に1〜2個\n【収穫予測】時期の目安\n【注意点】1つだけ\nやさしく実践的な日本語で。`,
         messages:[{role:'user',content:userContent}]})
     });
     const d=await r.json();
     const txt=d.content?.map(b=>b.text||'').join('')||'取得できませんでした';
-    res.innerHTML=`<div class="ai-box"><div class="ai-lbl">AI農業アドバイザー${photo?' 📷':''}</div><div class="ai-txt">${txt}</div></div>`;
+    res.innerHTML=`<div class="ai-box"><div class="ai-lbl">AI農業アドバイザー${photos.length?' 📷':''}</div><div class="ai-txt">${txt}</div></div>`;
   }catch(e){res.innerHTML='<div class="ai-box"><div class="ai-lbl">AI農業アドバイザー</div><div class="ai-txt">エラーが発生しました。</div></div>';}
   btn.disabled=false;btn.textContent='AIにアドバイスを聞く';
 }
@@ -234,17 +283,25 @@ async function saveLog(id){
   const memo=document.getElementById('memo-'+id).value;
   const h=document.getElementById('h-'+id).value;
   const q=document.getElementById('q-'+id).value;
+  const dt=document.getElementById('dt-'+id).value;
   const aiTxt=document.getElementById('air-'+id).querySelector('.ai-txt')?.textContent||'';
-  const photo=photoDataMap[id]||null;
-  if(!memo&&!h&&!q&&!photo){alert('写真かメモを入れてください');return;}
-  logs.unshift({id:Date.now(),cropId:id,cropName:c.name,cropIco:c.ico,date:new Date().toISOString(),memo,height:h,concern:q,aiAdvice:aiTxt,photo});
-  saveLogs();renderLog();renderFilter();renderCrops();
-  delete photoDataMap[id];
-  alert(`${c.name}の記録を保存しました！`);
+  const photos=photoDataMap[id]||[];
+  if(!memo&&!h&&!q&&!photos.length){alert('写真かメモを入れてください');return;}
+  try{
+    await sbFetch('logs',{method:'POST',body:JSON.stringify({
+      crop_id:id,crop_name:c.name,crop_ico:c.ico,
+      memo,height:h,concern:q,ai_advice:aiTxt,
+      photo:JSON.stringify(photos),
+      log_date:dt||todayStr()
+    })});
+    delete photoDataMap[id];
+    await loadLogs();
+    alert(`${c.name}の記録を保存しました！`);
+  }catch(e){alert('保存に失敗しました。');}
 }
 
 function renderFilter(){
-  const cropIds=['all',...new Set(logs.map(l=>l.cropId))];
+  const cropIds=['all',...new Set(logs.map(l=>l.crop_id))];
   const el=document.getElementById('logFilter');
   el.innerHTML=cropIds.map(id=>{
     if(id==='all')return`<button class="filter-btn ${currentFilter==='all'?'active':''}" onclick="setFilter('all')">すべて</button>`;
@@ -258,67 +315,79 @@ function setFilter(id){currentFilter=id;renderFilter();renderLog();}
 
 function renderLog(){
   const el=document.getElementById('logList');
-  const filtered=currentFilter==='all'?logs:logs.filter(l=>l.cropId===currentFilter);
+  const filtered=currentFilter==='all'?logs:logs.filter(l=>l.crop_id===currentFilter);
   if(!filtered.length){el.innerHTML='<div class="empty">記録がありません。</div>';return;}
-  el.innerHTML='<div class="log-list">'+filtered.map(l=>`
-    <div class="log-item">
-      <div class="log-head"><div class="log-crop">${l.cropIco} ${l.cropName}</div><div class="log-date">${fmtDate(l.date)}${l.edited?' ✏️':''}</div></div>
-      ${l.photo?`<img class="log-photo" src="${l.photo}">`:''}
+  el.innerHTML='<div class="log-list">'+filtered.map(l=>{
+    const photos=l.photo?JSON.parse(l.photo):[];
+    return`<div class="log-item">
+      <div class="log-head"><div class="log-crop">${l.crop_ico} ${l.crop_name}</div><div class="log-date">${fmtDate(l.log_date)}${l.edited_at?' ✏️':''}</div></div>
+      ${photos.length?`<div class="log-photos">${photos.map(p=>`<img class="log-photo" src="${p}">`).join('')}</div>`:''}
       ${l.memo?`<div class="log-memo">📝 ${l.memo}</div>`:''}
       ${l.height?`<div class="log-memo">📏 高さ：${l.height}cm</div>`:''}
       ${l.concern?`<div class="log-memo">⚠️ ${l.concern}</div>`:''}
-      ${l.aiAdvice?`<div class="log-ai">💬 ${l.aiAdvice.slice(0,100)}…</div>`:''}
+      ${l.ai_advice?`<div class="log-ai">💬 ${l.ai_advice.slice(0,100)}…</div>`:''}
       <div class="log-actions">
         <button class="edit-btn" onclick="openEdit(${l.id})">✏️ 編集・追記</button>
         <button class="del-btn2" onclick="deleteLog(${l.id})">削除</button>
       </div>
-    </div>`).join('')+'</div>';
+    </div>`;
+  }).join('')+'</div>';
 }
 
 function openEdit(id){
   const l=logs.find(x=>x.id===id);
   if(!l)return;
-  editingId=id;editPhotoData=null;
-  document.getElementById('editTitle').textContent=`${l.cropIco} ${l.cropName}の記録を編集`;
+  editingId=id;
+  editPhotosData=l.photo?JSON.parse(l.photo):[];
+  document.getElementById('editTitle').textContent=`${l.crop_ico} ${l.crop_name}の記録を編集`;
   document.getElementById('editMemo').value=l.memo||'';
   document.getElementById('editHeight').value=l.height||'';
   document.getElementById('editConcern').value=l.concern||'';
-  const prev=document.getElementById('editPhotoPreview');
-  if(l.photo){prev.src=l.photo;prev.style.display='block';}
-  else{prev.style.display='none';}
+  document.getElementById('editDate').value=l.log_date?l.log_date.slice(0,10):'';
+  document.getElementById('editPhotoPreviews').innerHTML=editPhotosData.map(p=>`<img class="edit-photo-thumb" src="${p}">`).join('');
   document.getElementById('editModal').classList.add('open');
 }
 
-function onEditPhoto(input){
-  const file=input.files[0];if(!file)return;
-  const reader=new FileReader();
-  reader.onload=e=>{
-    editPhotoData=e.target.result;
-    const prev=document.getElementById('editPhotoPreview');
-    prev.src=editPhotoData;prev.style.display='block';
-  };reader.readAsDataURL(file);
+function onEditPhotos(input){
+  const files=Array.from(input.files);
+  files.forEach(file=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      editPhotosData.push(e.target.result);
+      document.getElementById('editPhotoPreviews').innerHTML=editPhotosData.map(p=>`<img class="edit-photo-thumb" src="${p}">`).join('');
+    };
+    reader.readAsDataURL(file);
+  });
 }
 
-function saveEdit(){
+async function saveEdit(){
   const idx=logs.findIndex(x=>x.id===editingId);
   if(idx===-1)return;
-  logs[idx].memo=document.getElementById('editMemo').value;
-  logs[idx].height=document.getElementById('editHeight').value;
-  logs[idx].concern=document.getElementById('editConcern').value;
-  if(editPhotoData)logs[idx].photo=editPhotoData;
-  logs[idx].edited=new Date().toISOString();
-  saveLogs();renderLog();renderCrops();closeEdit();
+  try{
+    await sbFetch(`logs?id=eq.${editingId}`,{method:'PATCH',body:JSON.stringify({
+      memo:document.getElementById('editMemo').value,
+      height:document.getElementById('editHeight').value,
+      concern:document.getElementById('editConcern').value,
+      log_date:document.getElementById('editDate').value,
+      photo:JSON.stringify(editPhotosData),
+      edited_at:new Date().toISOString()
+    })});
+    await loadLogs();
+    closeEdit();
+  }catch(e){alert('保存に失敗しました。');}
 }
 
 function closeEdit(){
   document.getElementById('editModal').classList.remove('open');
-  editingId=null;editPhotoData=null;
+  editingId=null;editPhotosData=[];
 }
 
-function deleteLog(id){
+async function deleteLog(id){
   if(!confirm('この記録を削除しますか？'))return;
-  logs=logs.filter(l=>l.id!==id);
-  saveLogs();renderLog();renderFilter();renderCrops();
+  try{
+    await sbFetch(`logs?id=eq.${id}`,{method:'DELETE'});
+    await loadLogs();
+  }catch(e){alert('削除に失敗しました。');}
 }
 
 async function loadTrend(){
@@ -328,7 +397,7 @@ async function loadTrend(){
   sl.innerHTML='<div class="ai-box"><div class="ai-lbl">検索中</div><div class="ai-txt">最新のトレンドを調べています...</div></div>';
   try{
     const r=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',headers:{'Content-Type':'application/json','x-api-key':API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      method:'POST',headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,
         tools:[{type:'web_search_20250305',name:'web_search'}],
         system:`あなたは農業×エンタメのトレンドリサーチャーです。絵本・アニメ・SNSで話題の野菜、海外ブーム食材、スーパーフード、道の駅で人気の珍しい野菜をリサーチ。結果はJSON配列のみ：[{"tag":"tp","label":"ラベル名","ico":"絵文字","name":"作物名","desc":"100字以内"}] tagはts=旬/tt=海外/tp=話題。JSONのみ返すこと。`,
