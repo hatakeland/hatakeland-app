@@ -8,32 +8,16 @@
 <link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-:root{
-  --bg:#F5F0E8;
-  --card:#FFFDF7;
-  --green:#4A7C59;
-  --green-light:#E8F0EB;
-  --green-mid:#7AAF8A;
-  --amber:#C4822A;
-  --amber-light:#F5EBD8;
-  --text:#2C2416;
-  --text-mid:#6B5E4A;
-  --text-light:#A09080;
-  --border:#E0D8C8;
-  --border-dark:#C8BCA8;
-  --radius:14px;
-  --radius-sm:8px;
-}
+:root{--bg:#F5F0E8;--card:#FFFDF7;--green:#4A7C59;--green-light:#E8F0EB;--green-mid:#7AAF8A;--amber:#C4822A;--amber-light:#F5EBD8;--text:#2C2416;--text-mid:#6B5E4A;--text-light:#A09080;--border:#E0D8C8;--border-dark:#C8BCA8;--radius:14px;--radius-sm:8px;}
 body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
 body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background-image:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C8BCA8' fill-opacity='0.12'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");pointer-events:none;z-index:0;}
 .app{max-width:480px;margin:0 auto;padding:0 0 2rem;position:relative;z-index:1;}
-.hdr{position:relative;overflow:hidden;border-radius:0 0 24px 24px;margin-bottom:1rem;}
-.hdr-bg{background:linear-gradient(160deg,#2D5A3D 0%,#4A7C59 40%,#6B9E7A 70%,#8FB89A 100%);padding:1.5rem 1rem 1.25rem;text-align:center;position:relative;}
-.hdr-bg::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background-image:url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 10 Q55 0 60 10 Q65 20 60 25 Q55 30 50 25 Q45 20 50 10Z' fill='rgba(255,255,255,0.06)'/%3E%3Cpath d='M20 50 Q25 35 35 45 Q45 55 35 60 Q25 65 20 50Z' fill='rgba(255,255,255,0.04)'/%3E%3Cpath d='M70 60 Q80 50 85 65 Q90 80 75 75 Q65 70 70 60Z' fill='rgba(255,255,255,0.05)'/%3E%3C/svg%3E");background-size:200px 200px;}
+.hdr{border-radius:0 0 24px 24px;margin-bottom:1rem;overflow:hidden;}
+.hdr-bg{background:linear-gradient(160deg,#2D5A3D 0%,#4A7C59 40%,#6B9E7A 70%,#8FB89A 100%);padding:1.5rem 1rem 1.25rem;text-align:center;}
 .hdr-logo{width:90px;height:90px;border-radius:50%;border:3px solid rgba(255,255,255,0.6);box-shadow:0 4px 20px rgba(0,0,0,0.2);margin:0 auto 10px;display:block;object-fit:cover;background:#fff;}
 .hdr-title{font-family:'Klee One',cursive;font-size:13px;color:rgba(255,255,255,0.85);letter-spacing:0.15em;background:rgba(0,0,0,0.15);display:inline-block;padding:3px 12px;border-radius:20px;}
 .tabs-wrap{padding:0 0.75rem;}
-.tabs{display:flex;gap:0;background:var(--card);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;}
+.tabs{display:flex;background:var(--card);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;}
 .tab{flex:1;padding:9px 8px;font-size:12px;cursor:pointer;background:transparent;color:var(--text-mid);border:none;font-family:'Noto Sans JP',sans-serif;font-weight:500;letter-spacing:0.05em;transition:all 0.2s;}
 .tab.active{background:var(--green);color:#fff;}
 .sec{display:none;padding:0.75rem;}
@@ -42,7 +26,7 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background-
 .crop-card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;}
 .crop-card.open{border-color:var(--green);}
 .crop-row{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;}
-.crop-ico{font-size:26px;line-height:1;}
+.crop-ico{font-size:26px;}
 .crop-info{flex:1;}
 .crop-name{font-size:14px;font-weight:700;color:var(--text);}
 .crop-st{font-size:11px;color:var(--text-light);margin-top:2px;display:flex;align-items:center;gap:4px;}
@@ -155,7 +139,6 @@ input:focus{outline:none;border-color:var(--green-mid);}
   </div>
 </div>
 
-<!-- 記録編集モーダル -->
 <div class="modal-overlay" id="editModal">
   <div class="modal-box">
     <h3 id="editTitle">記録を編集</h3>
@@ -177,7 +160,6 @@ input:focus{outline:none;border-color:var(--green-mid);}
   </div>
 </div>
 
-<!-- 作物追加モーダル -->
 <div class="modal-overlay" id="addCropModal">
   <div class="modal-box">
     <h3>新しい作物を追加</h3>
@@ -203,7 +185,6 @@ input:focus{outline:none;border-color:var(--green-mid);}
 const SUPABASE_URL='https://bwhngwankpsejqeplwuh.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ3aG5nd2Fua3BzZWpxZXBsd3VoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NTE3MTgsImV4cCI6MjA5MjAyNzcxOH0.oyRD5PjPbKMQZL0XneEUzQVYSEKx2fkyLW7lQYiu2WE';
 const AI_PROXY=SUPABASE_URL+'/functions/v1/ai-proxy';
-
 const ICONS=['🍅','🫛','🫘','🧅','🧄','🥔','🌽','🥕','🥬','🥦','🍆','🫑','🌶️','🥒','🌿','🍠','🫚','🫐','🍓','🍋'];
 const STATUS_DOTS={'生育中':'dg','収穫近し':'da','発芽待ち':'db','収穫済み':'da'};
 
@@ -223,20 +204,21 @@ const defaultSuggests=[
 ];
 
 let openId=null,logs=[],photoDataMap={},editingId=null,editPhotosData=[],currentFilter='all';
-let selectedIco=ICONS[0],selectedStatus='生育中';
-let moreContents={};
+let selectedIco=ICONS[0],selectedStatus='生育中',moreContents={};
 
-function loadCrops(){
-  const saved=localStorage.getItem('hatake-crops');
-  if(saved)crops=JSON.parse(saved);
-}
+const SB_HEADERS={
+  'apikey':SUPABASE_KEY,
+  'Authorization':'Bearer '+SUPABASE_KEY,
+  'Content-Type':'application/json',
+  'Prefer':'return=representation'
+};
+
+function loadCrops(){const s=localStorage.getItem('hatake-crops');if(s)crops=JSON.parse(s);}
 function saveCropsLocal(){localStorage.setItem('hatake-crops',JSON.stringify(crops));}
 
 async function sbFetch(path,opts={}){
-  const res=await fetch(SUPABASE_URL+'/rest/v1/'+path,{
-    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=representation',...(opts.headers||{})},
-    ...opts
-  });
+  const headers={...SB_HEADERS,...(opts.headers||{})};
+  const res=await fetch(SUPABASE_URL+'/rest/v1/'+path,{...opts,headers});
   if(!res.ok)throw new Error(await res.text());
   const txt=await res.text();
   return txt?JSON.parse(txt):[];
@@ -261,9 +243,9 @@ async function loadLogs(){
 
 function fmtDate(d){if(!d)return'';return d.slice(0,10).replace(/-/g,'/');}
 function todayStr(){const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
-function getLastLog(cropId){return logs.find(l=>l.crop_id===cropId);}
-function getRecentLogs(cropId,n=5){return logs.filter(l=>l.crop_id===cropId).slice(0,n);}
-function dotClass(status){return STATUS_DOTS[status]||'dg';}
+function getLastLog(cid){return logs.find(l=>l.crop_id===cid);}
+function getRecentLogs(cid,n=5){return logs.filter(l=>l.crop_id===cid).slice(0,n);}
+function dotClass(s){return STATUS_DOTS[s]||'dg';}
 
 function renderCrops(){
   document.getElementById('cropList').innerHTML=crops.map(c=>{
@@ -272,10 +254,7 @@ function renderCrops(){
     return`<div class="crop-card ${openId===c.id?'open':''}" id="cc-${c.id}">
       <div class="crop-row" onclick="toggle('${c.id}')">
         <div class="crop-ico">${c.ico}</div>
-        <div class="crop-info">
-          <div class="crop-name">${c.name}</div>
-          <div class="crop-st"><span class="sdot ${dotClass(c.status)}"></span>${c.status}</div>
-        </div>
+        <div class="crop-info"><div class="crop-name">${c.name}</div><div class="crop-st"><span class="sdot ${dotClass(c.status)}"></span>${c.status}</div></div>
         <div class="chevron ${openId===c.id?'open':''}">▼</div>
       </div>
       <div class="detail ${openId===c.id?'open':''}" id="d-${c.id}">
@@ -295,7 +274,7 @@ function renderCrops(){
         <div class="lbl">日付</div>
         <input type="date" id="dt-${c.id}" value="${todayStr()}">
         <div class="lbl">今日の様子・メモ</div>
-        <textarea id="memo-${c.id}" placeholder="例：アブラムシ発生、摘心した、葉が黄色い…"></textarea>
+        <textarea id="memo-${c.id}" placeholder="例：アブラムシ発生、摘心した…"></textarea>
         <div class="row2">
           <div><div class="lbl">サイズメモ</div><input type="text" id="h-${c.id}" placeholder="例：高さ20cm"></div>
           <div><div class="lbl">気になること</div><input type="text" id="q-${c.id}" placeholder="例：虫・変色"></div>
@@ -307,16 +286,12 @@ function renderCrops(){
 }
 
 function onPhotos(id,input){
-  const files=Array.from(input.files);
-  if(!files.length)return;
+  const files=Array.from(input.files);if(!files.length)return;
   photoDataMap[id]=photoDataMap[id]||[];
   const preview=document.getElementById('pp-'+id);
   files.forEach(file=>{
     const reader=new FileReader();
-    reader.onload=e=>{
-      photoDataMap[id].push(e.target.result);
-      preview.innerHTML=photoDataMap[id].map(p=>`<img class="photo-thumb" src="${p}">`).join('');
-    };
+    reader.onload=e=>{photoDataMap[id].push(e.target.result);preview.innerHTML=photoDataMap[id].map(p=>`<img class="photo-thumb" src="${p}">`).join('');};
     reader.readAsDataURL(file);
   });
 }
@@ -332,12 +307,7 @@ async function saveLog(id){
   const photos=photoDataMap[id]||[];
   if(!memo&&!h&&!q&&!photos.length){alert('写真かメモを入れてください');return;}
   try{
-    await sbFetch('logs',{method:'POST',body:JSON.stringify({
-      crop_id:id,crop_name:c.name,crop_ico:c.ico,
-      memo,height:h,concern:q,ai_advice:'',
-      photo:JSON.stringify(photos),
-      log_date:dt||todayStr()
-    })});
+    await sbFetch('logs',{method:'POST',body:JSON.stringify({crop_id:id,crop_name:c.name,crop_ico:c.ico,memo,height:h,concern:q,ai_advice:'',photo:JSON.stringify(photos),log_date:dt||todayStr()})});
     delete photoDataMap[id];
     await loadLogs();
     alert(`${c.name}の記録を保存しました！\n記録帳からAIアドバイスをもらえます。`);
@@ -346,8 +316,7 @@ async function saveLog(id){
 }
 
 async function askAIFromLog(logId){
-  const l=logs.find(x=>x.id===logId);
-  if(!l)return;
+  const l=logs.find(x=>x.id===logId);if(!l)return;
   const btn=document.getElementById('laibtn-'+logId);
   const box=document.getElementById('laibox-'+logId);
   btn.disabled=true;btn.textContent='考え中...';
@@ -356,25 +325,17 @@ async function askAIFromLog(logId){
   const recentLogs=getRecentLogs(l.crop_id,5);
   const historyText=recentLogs.map(r=>`[${fmtDate(r.log_date)}] ${r.memo||''}${r.height?' サイズ:'+r.height:''}${r.concern?' 気になること:'+r.concern:''}`).join('\n');
   const photos=l.photo?JSON.parse(l.photo):[];
-  const textContent=`作物：${l.crop_name}\n\n【今回の記録 ${fmtDate(l.log_date)}】\n${l.memo||''}${l.height?'\nサイズ：'+l.height:''}\n${l.concern?'気になること：'+l.concern+'\n':''}\n【過去の記録履歴】\n${historyText}\n\n広島県安佐南区・菌ちゃん農法で栽培。過去の記録を踏まえてアドバイスをお願いします。`;
-  let userContent=photos.length?[
-    ...photos.map(p=>({type:'image',source:{type:'base64',media_type:p.split(';')[0].split(':')[1],data:p.split(',')[1]}})),
-    {type:'text',text:textContent}
-  ]:textContent;
+  const textContent=`作物：${l.crop_name}\n\n【今回の記録 ${fmtDate(l.log_date)}】\n${l.memo||''}${l.height?'\nサイズ：'+l.height:''}\n${l.concern?'気になること：'+l.concern+'\n':''}\n【過去の記録履歴】\n${historyText}\n\n広島県安佐南区・菌ちゃん農法で栽培。`;
+  let userContent=photos.length?[...photos.map(p=>({type:'image',source:{type:'base64',media_type:p.split(';')[0].split(':')[1],data:p.split(',')[1]}})),{type:'text',text:textContent}]:textContent;
   try{
-    const d=await callAI({
-      model:'claude-sonnet-4-5',max_tokens:600,
+    const d=await callAI({model:'claude-sonnet-4-5',max_tokens:600,
       system:`あなたは広島県安佐南区の自然農法（菌ちゃん農法）農園「ハタケランド」専属の農業アドバイザーです。過去の記録履歴を必ず参考にして文脈を踏まえた具体的なアドバイスをしてください。写真がある場合は必ず触れてください。回答は以下の3セクションで300字以内：\n【状況の読み取り】過去の記録から見えること\n【今すぐやること】具体的に1〜2個\n【次回の確認ポイント】\nやさしく実践的な日本語で。`,
-      messages:[{role:'user',content:userContent}]
-    });
+      messages:[{role:'user',content:userContent}]});
     const txt=d.content?.map(b=>b.text||'').join('')||'取得できませんでした';
     box.innerHTML=`<div class="log-ai-lbl">AI農業アドバイザー${photos.length?' 📷':''}</div><div class="log-ai-txt">${txt}</div>`;
     await sbFetch(`logs?id=eq.${logId}`,{method:'PATCH',body:JSON.stringify({ai_advice:txt})});
-    const idx=logs.findIndex(x=>x.id===logId);
-    if(idx>-1)logs[idx].ai_advice=txt;
-  }catch(e){
-    box.innerHTML=`<div class="log-ai-lbl">AI農業アドバイザー</div><div class="log-ai-txt">エラーが発生しました。</div>`;
-  }
+    const idx=logs.findIndex(x=>x.id===logId);if(idx>-1)logs[idx].ai_advice=txt;
+  }catch(e){box.innerHTML=`<div class="log-ai-lbl">AI農業アドバイザー</div><div class="log-ai-txt">エラーが発生しました。</div>`;}
   btn.disabled=false;btn.textContent='🌿 AIアドバイスを更新する';
 }
 
@@ -383,8 +344,7 @@ function renderFilter(){
   document.getElementById('logFilter').innerHTML=cropIds.map(id=>{
     if(id==='all')return`<button class="filter-btn ${currentFilter==='all'?'active':''}" onclick="setFilter('all')">すべて</button>`;
     const c=crops.find(x=>x.id===id);
-    const name=c?c.ico+' '+c.name:id;
-    return`<button class="filter-btn ${currentFilter===id?'active':''}" onclick="setFilter('${id}')">${name}</button>`;
+    return`<button class="filter-btn ${currentFilter===id?'active':''}" onclick="setFilter('${id}')">${c?c.ico+' '+c.name:id}</button>`;
   }).join('');
 }
 
@@ -398,10 +358,7 @@ function renderLog(){
     const photos=l.photo?JSON.parse(l.photo):[];
     const hasAI=l.ai_advice&&l.ai_advice.length>0;
     return`<div class="log-item" id="logitem-${l.id}">
-      <div class="log-head">
-        <div class="log-crop">${l.crop_ico} ${l.crop_name}</div>
-        <div class="log-date">${fmtDate(l.log_date)}</div>
-      </div>
+      <div class="log-head"><div class="log-crop">${l.crop_ico} ${l.crop_name}</div><div class="log-date">${fmtDate(l.log_date)}</div></div>
       ${photos.length?`<div class="log-photos">${photos.map(p=>`<img class="log-photo" src="${p}">`).join('')}</div>`:''}
       ${l.memo?`<div class="log-memo">📝 ${l.memo}</div>`:''}
       ${l.height?`<div class="log-memo">📐 ${l.height}</div>`:''}
@@ -409,9 +366,7 @@ function renderLog(){
       <div class="log-ai-box" id="laibox-${l.id}" style="${hasAI?'':'display:none'}">
         ${hasAI?`<div class="log-ai-lbl">AI農業アドバイザー</div><div class="log-ai-txt">${l.ai_advice}</div>`:''}
       </div>
-      <button class="log-ai-btn" id="laibtn-${l.id}" onclick="askAIFromLog(${l.id})">
-        ${hasAI?'🌿 AIアドバイスを更新する':'🌿 この記録でAIアドバイスをもらう'}
-      </button>
+      <button class="log-ai-btn" id="laibtn-${l.id}" onclick="askAIFromLog(${l.id})">${hasAI?'🌿 AIアドバイスを更新する':'🌿 この記録でAIアドバイスをもらう'}</button>
       <div class="log-actions">
         <button class="edit-btn" onclick="openEdit(${l.id})">✏️ 編集・追記</button>
         <button class="del-btn2" onclick="deleteLog(${l.id})">削除</button>
@@ -421,10 +376,8 @@ function renderLog(){
 }
 
 function openEdit(id){
-  const l=logs.find(x=>x.id===id);
-  if(!l)return;
-  editingId=id;
-  editPhotosData=l.photo?JSON.parse(l.photo):[];
+  const l=logs.find(x=>x.id===id);if(!l)return;
+  editingId=id;editPhotosData=l.photo?JSON.parse(l.photo):[];
   document.getElementById('editTitle').textContent=`${l.crop_ico} ${l.crop_name}の記録を編集`;
   document.getElementById('editMemo').value=l.memo||'';
   document.getElementById('editHeight').value=l.height||'';
@@ -437,45 +390,33 @@ function openEdit(id){
 function onEditPhotos(input){
   Array.from(input.files).forEach(file=>{
     const reader=new FileReader();
-    reader.onload=e=>{
-      editPhotosData.push(e.target.result);
-      document.getElementById('editPhotoPreviews').innerHTML=editPhotosData.map(p=>`<img class="edit-photo-thumb" src="${p}">`).join('');
-    };
+    reader.onload=e=>{editPhotosData.push(e.target.result);document.getElementById('editPhotoPreviews').innerHTML=editPhotosData.map(p=>`<img class="edit-photo-thumb" src="${p}">`).join('');};
     reader.readAsDataURL(file);
   });
 }
 
 async function saveEdit(){
   try{
-    await sbFetch(`logs?id=eq.${editingId}`,{method:'PATCH',body:JSON.stringify({
-      memo:document.getElementById('editMemo').value,
-      height:document.getElementById('editHeight').value,
-      concern:document.getElementById('editConcern').value,
-      log_date:document.getElementById('editDate').value,
-      photo:JSON.stringify(editPhotosData),
-      edited_at:new Date().toISOString()
-    })});
+    await sbFetch(`logs?id=eq.${editingId}`,{method:'PATCH',body:JSON.stringify({memo:document.getElementById('editMemo').value,height:document.getElementById('editHeight').value,concern:document.getElementById('editConcern').value,log_date:document.getElementById('editDate').value,photo:JSON.stringify(editPhotosData),edited_at:new Date().toISOString()})});
     await loadLogs();closeEdit();
   }catch(e){alert('保存に失敗しました。');}
 }
 
-function closeEdit(){
-  document.getElementById('editModal').classList.remove('open');
-  editingId=null;editPhotosData=[];
-}
+function closeEdit(){document.getElementById('editModal').classList.remove('open');editingId=null;editPhotosData=[];}
 
 async function deleteLog(id){
   if(!confirm('この記録を削除しますか？'))return;
   try{
-    await sbFetch(`logs?id=eq.${id}`,{method:'DELETE',headers:{'Prefer':'return=minimal'}});
+    const res=await fetch(SUPABASE_URL+'/rest/v1/logs?id=eq.'+id,{
+      method:'DELETE',
+      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Prefer':'return=minimal'}
+    });
+    if(!res.ok)throw new Error(await res.text());
     logs=logs.filter(l=>l.id!==id);
-    renderLog();
-    renderFilter();
-    renderCrops();
+    renderLog();renderFilter();renderCrops();
   }catch(e){alert('削除に失敗しました。'+e.message);}
 }
 
-// 作物追加
 function openAddCrop(){
   selectedIco=ICONS[0];selectedStatus='生育中';
   document.getElementById('newCropName').value='';
@@ -484,24 +425,14 @@ function openAddCrop(){
   document.getElementById('addCropModal').classList.add('open');
 }
 
-function selectIco(ico){
-  selectedIco=ico;
-  document.querySelectorAll('.ico-btn').forEach(b=>{b.classList.toggle('selected',b.textContent===ico);});
-}
-
-function selectStatus(s){
-  selectedStatus=s;
-  document.querySelectorAll('.status-btn').forEach(b=>{b.classList.toggle('selected',b.textContent===s);});
-}
+function selectIco(ico){selectedIco=ico;document.querySelectorAll('.ico-btn').forEach(b=>{b.classList.toggle('selected',b.textContent===ico);});}
+function selectStatus(s){selectedStatus=s;document.querySelectorAll('.status-btn').forEach(b=>{b.classList.toggle('selected',b.textContent===s);});}
 
 function saveAddCrop(){
   const name=document.getElementById('newCropName').value.trim();
   if(!name){alert('作物名を入力してください');return;}
-  const id='crop_'+Date.now();
-  crops.push({id,ico:selectedIco,name,status:selectedStatus,stage:'新しく追加した作物'});
-  saveCropsLocal();
-  renderCrops();
-  closeAddCrop();
+  crops.push({id:'crop_'+Date.now(),ico:selectedIco,name,status:selectedStatus,stage:'新しく追加した作物'});
+  saveCropsLocal();renderCrops();closeAddCrop();
 }
 
 function closeAddCrop(){document.getElementById('addCropModal').classList.remove('open');}
@@ -509,19 +440,11 @@ function closeAddCrop(){document.getElementById('addCropModal').classList.remove
 async function toggleMore(idx,name){
   const content=document.getElementById('smore-'+idx);
   const btn=document.getElementById('smorebtn-'+idx);
-  if(content.classList.contains('open')){
-    content.classList.remove('open');btn.textContent='MORE +';return;
-  }
-  if(moreContents[idx]){
-    content.innerHTML=moreContents[idx];content.classList.add('open');btn.textContent='LESS −';return;
-  }
+  if(content.classList.contains('open')){content.classList.remove('open');btn.textContent='MORE +';return;}
+  if(moreContents[idx]){content.innerHTML=moreContents[idx];content.classList.add('open');btn.textContent='LESS −';return;}
   btn.disabled=true;btn.textContent='読み込み中...';
   try{
-    const d=await callAI({
-      model:'claude-sonnet-4-5',max_tokens:400,
-      system:'農業×エンタメの専門家として簡潔に答えてください。300字以内。',
-      messages:[{role:'user',content:`${name}について：栽培スケジュールとハタケランドのイベント・集客への活用方法を教えてください。`}]
-    });
+    const d=await callAI({model:'claude-sonnet-4-5',max_tokens:400,system:'農業×エンタメの専門家として簡潔に答えてください。300字以内。',messages:[{role:'user',content:`${name}について：栽培スケジュールとハタケランドのイベント・集客への活用方法を教えてください。`}]});
     const txt=d.content?.map(b=>b.text||'').join('')||'情報を取得できませんでした。';
     moreContents[idx]=txt;content.innerHTML=txt;content.classList.add('open');btn.textContent='LESS −';
   }catch(e){content.innerHTML='情報を取得できませんでした。';content.classList.add('open');btn.textContent='LESS −';}
@@ -532,12 +455,9 @@ async function loadTrend(){
   const btn=document.getElementById('trendBtn');
   btn.disabled=true;btn.textContent='検索中...';
   try{
-    const d=await callAI({
-      model:'claude-sonnet-4-5',max_tokens:800,
-      tools:[{type:'web_search_20250305',name:'web_search'}],
+    const d=await callAI({model:'claude-sonnet-4-5',max_tokens:800,tools:[{type:'web_search_20250305',name:'web_search'}],
       system:`農業×エンタメのトレンドリサーチャーです。絵本・アニメ・SNS・海外ブーム・スーパーフード・道の駅人気品をリサーチ。結果はJSON配列のみ：[{"tag":"tp","label":"ラベル名","ico":"絵文字","name":"作物名","desc":"100字以内"}] tagはts=旬/tt=海外/tp=話題。JSONのみ返すこと。`,
-      messages:[{role:'user',content:`今日は${new Date().getMonth()+1}月${new Date().getDate()}日。広島の農家向けに今注目の野菜トレンドを4件検索して。`}]
-    });
+      messages:[{role:'user',content:`今日は${new Date().getMonth()+1}月${new Date().getDate()}日。広島の農家向けに今注目の野菜トレンドを4件検索して。`}]});
     const txt=d.content?.map(b=>b.text||'').join('')||'[]';
     let items;try{items=JSON.parse(txt.replace(/```json|```/g,'').trim());}catch(e){items=[];}
     renderSuggests([...defaultSuggests,...items]);
@@ -548,13 +468,9 @@ async function loadTrend(){
 function renderSuggests(items){
   moreContents={};
   document.getElementById('suggestList').innerHTML=items.map((s,i)=>`
-    <div class="scard">
-      <span class="stag ${s.tag}">${s.label}</span>
-      <div class="sname">${s.ico} ${s.name}</div>
-      <div class="sdesc">${s.desc}</div>
-      <button class="smore-btn" id="smorebtn-${i}" onclick="toggleMore(${i},'${s.name}')">MORE +</button>
-      <div class="smore-content" id="smore-${i}"></div>
-    </div>`).join('');
+    <div class="scard"><span class="stag ${s.tag}">${s.label}</span><div class="sname">${s.ico} ${s.name}</div><div class="sdesc">${s.desc}</div>
+    <button class="smore-btn" id="smorebtn-${i}" onclick="toggleMore(${i},'${s.name}')">MORE +</button>
+    <div class="smore-content" id="smore-${i}"></div></div>`).join('');
 }
 
 function sw(tab){
@@ -562,10 +478,7 @@ function sw(tab){
   document.querySelectorAll('.tab').forEach((t,i)=>{t.classList.toggle('active',['crops','suggest','log'][i]===tab);});
 }
 
-loadCrops();
-renderSuggests(defaultSuggests);
-loadLogs();
-renderCrops();
+loadCrops();renderSuggests(defaultSuggests);loadLogs();renderCrops();
 </script>
 </body>
 </html>
