@@ -136,7 +136,7 @@ input[type=text],input[type=date]{width:100%;font-size:13px;border:1px solid #e0
 
 <script>
 const SUPABASE_URL='https://bwhngwankpsejqeplwuh.supabase.co';
-const SUPABASE_KEY='sb_publishable_In66_z-7OTfE4LdvUSJDzA_Qi3GRnaNAPI';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ3aG5nd2Fua3BzZWpxZXBsd3VoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NTE3MTgsImV4cCI6MjA5MjAyNzcxOH0.oyRD5PjPbKMQZL0XneEUzQVYSEKx2fkyLW7lQYiu2WE';
 const AI_PROXY=SUPABASE_URL+'/functions/v1/ai-proxy';
 
 const crops=[
@@ -304,7 +304,7 @@ async function saveLog(id){
     delete photoDataMap[id];
     await loadLogs();
     alert(`${c.name}の記録を保存しました！`);
-  }catch(e){alert('保存に失敗しました。');}
+  }catch(e){alert('保存に失敗しました。'+e.message);}
 }
 
 function renderFilter(){
