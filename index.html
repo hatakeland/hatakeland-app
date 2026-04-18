@@ -26,15 +26,21 @@
 }
 body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
 body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background-image:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C8BCA8' fill-opacity='0.12'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");pointer-events:none;z-index:0;}
-.app{max-width:480px;margin:0 auto;padding:0 0.75rem 2rem;position:relative;z-index:1;}
-.hdr{padding:1.25rem 0 0.75rem;text-align:center;position:relative;}
-.hdr h1{font-family:'Klee One',cursive;font-size:26px;font-weight:600;color:var(--green);letter-spacing:0.05em;}
-.hdr p{font-size:12px;color:var(--text-light);margin-top:4px;letter-spacing:0.08em;}
-.hdr-deco{width:120px;height:2px;background:linear-gradient(90deg,transparent,var(--green-mid),transparent);margin:8px auto 0;}
-.tabs{display:flex;gap:0;margin-bottom:1rem;background:var(--card);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;}
+.app{max-width:480px;margin:0 auto;padding:0 0 2rem;position:relative;z-index:1;}
+
+/* ヘッダー */
+.hdr{position:relative;overflow:hidden;border-radius:0 0 24px 24px;margin-bottom:1rem;}
+.hdr-bg{background:linear-gradient(160deg,#2D5A3D 0%,#4A7C59 40%,#6B9E7A 70%,#8FB89A 100%);padding:1.5rem 1rem 1.25rem;text-align:center;position:relative;}
+.hdr-bg::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background-image:url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 10 Q55 0 60 10 Q65 20 60 25 Q55 30 50 25 Q45 20 50 10Z' fill='rgba(255,255,255,0.06)'/%3E%3Cpath d='M20 50 Q25 35 35 45 Q45 55 35 60 Q25 65 20 50Z' fill='rgba(255,255,255,0.04)'/%3E%3Cpath d='M70 60 Q80 50 85 65 Q90 80 75 75 Q65 70 70 60Z' fill='rgba(255,255,255,0.05)'/%3E%3Cpath d='M10 20 Q15 10 20 20 Q25 30 15 30 Q5 30 10 20Z' fill='rgba(255,255,255,0.04)'/%3E%3Cpath d='M80 20 Q85 10 90 20 Q95 30 85 28 Q75 26 80 20Z' fill='rgba(255,255,255,0.04)'/%3E%3C/svg%3E");background-size:200px 200px;}
+.hdr-logo{width:90px;height:90px;border-radius:50%;border:3px solid rgba(255,255,255,0.6);box-shadow:0 4px 20px rgba(0,0,0,0.2);margin:0 auto 10px;display:block;object-fit:cover;background:#fff;}
+.hdr-title{font-family:'Klee One',cursive;font-size:13px;color:rgba(255,255,255,0.85);letter-spacing:0.15em;background:rgba(0,0,0,0.15);display:inline-block;padding:3px 12px;border-radius:20px;}
+
+.tabs-wrap{padding:0 0.75rem;}
+.tabs{display:flex;gap:0;background:var(--card);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;}
 .tab{flex:1;padding:9px 8px;font-size:12px;cursor:pointer;background:transparent;color:var(--text-mid);border:none;font-family:'Noto Sans JP',sans-serif;font-weight:500;letter-spacing:0.05em;transition:all 0.2s;}
 .tab.active{background:var(--green);color:#fff;}
-.sec{display:none;}
+
+.sec{display:none;padding:0.75rem;}
 .sec.active{display:block;}
 .crop-list{display:flex;flex-direction:column;gap:10px;}
 .crop-card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color 0.2s;}
@@ -70,22 +76,19 @@ input:focus{outline:none;border-color:var(--green-mid);}
 .photo-previews{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;}
 .photo-thumb{width:72px;height:72px;object-fit:cover;border-radius:6px;border:1.5px solid var(--border);}
 .photo-input{display:none;}
-.abtn{width:100%;padding:12px;font-size:13px;font-weight:700;cursor:pointer;border-radius:var(--radius-sm);border:none;background:var(--green);color:#fff;margin-bottom:8px;font-family:'Noto Sans JP',sans-serif;letter-spacing:0.05em;transition:opacity 0.2s;}
-.abtn:disabled{opacity:0.5;cursor:default;}
-.sbtn{width:100%;padding:10px;font-size:13px;cursor:pointer;border-radius:var(--radius-sm);border:1.5px solid var(--border-dark);background:var(--card);color:var(--text-mid);font-family:'Noto Sans JP',sans-serif;transition:all 0.2s;}
-.sbtn:hover{border-color:var(--green-mid);}
-.ai-box{background:var(--green-light);border-radius:var(--radius-sm);padding:12px;margin-top:10px;border:1px solid var(--green-mid);}
-.ai-lbl{font-size:10px;font-weight:700;color:var(--green);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;}
-.ai-txt{font-size:13px;color:var(--text);line-height:1.8;white-space:pre-wrap;}
+.sbtn{width:100%;padding:12px;font-size:13px;font-weight:700;cursor:pointer;border-radius:var(--radius-sm);border:none;background:var(--green);color:#fff;margin-bottom:8px;font-family:'Noto Sans JP',sans-serif;letter-spacing:0.05em;transition:opacity 0.2s;}
+.sbtn:disabled{opacity:0.5;}
 .suggest-list{display:flex;flex-direction:column;gap:10px;}
 .scard{background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);padding:14px;}
 .stag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;margin-bottom:6px;font-weight:700;letter-spacing:0.05em;}
 .ts{background:var(--green-light);color:var(--green);}.tt{background:#E8F0F8;color:#3A6B9A;}.tp{background:var(--amber-light);color:var(--amber);}
 .sname{font-size:15px;font-weight:700;color:var(--text);font-family:'Klee One',cursive;}
 .sdesc{font-size:12px;color:var(--text-mid);margin-top:5px;line-height:1.7;}
-.sask{margin-top:10px;font-size:12px;color:var(--green);cursor:pointer;background:none;border:1px solid var(--green-mid);padding:5px 12px;border-radius:20px;font-family:'Noto Sans JP',sans-serif;transition:all 0.2s;}
-.sask:hover{background:var(--green);color:#fff;}
-.trend-btn{width:100%;padding:11px;font-size:13px;cursor:pointer;border-radius:var(--radius-sm);border:1.5px dashed var(--border-dark);background:transparent;color:var(--text-mid);margin-bottom:1rem;font-family:'Noto Sans JP',sans-serif;transition:all 0.2s;}
+.smore-btn{margin-top:10px;font-size:12px;color:var(--green);cursor:pointer;background:none;border:1px solid var(--green-mid);padding:5px 14px;border-radius:20px;font-family:'Noto Sans JP',sans-serif;transition:all 0.2s;}
+.smore-btn:hover{background:var(--green);color:#fff;}
+.smore-content{display:none;margin-top:10px;padding-top:10px;border-top:1px dashed var(--border);font-size:12px;color:var(--text-mid);line-height:1.7;white-space:pre-wrap;}
+.smore-content.open{display:block;}
+.trend-btn{width:100%;padding:11px;font-size:13px;cursor:pointer;border-radius:var(--radius-sm);border:1.5px dashed var(--border-dark);background:transparent;color:var(--text-mid);margin-top:10px;font-family:'Noto Sans JP',sans-serif;transition:all 0.2s;}
 .trend-btn:hover{border-color:var(--green-mid);color:var(--green);}
 .trend-btn:disabled{opacity:0.5;cursor:default;}
 .log-filter{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px;}
@@ -118,29 +121,30 @@ input:focus{outline:none;border-color:var(--green-mid);}
 .modal-cancel{flex:1;padding:11px;font-size:13px;cursor:pointer;border-radius:var(--radius-sm);border:1.5px solid var(--border-dark);background:transparent;color:var(--text-mid);font-family:'Noto Sans JP',sans-serif;}
 .empty{font-size:13px;color:var(--text-light);text-align:center;padding:2.5rem 0;}
 .loading{font-size:13px;color:var(--text-light);text-align:center;padding:2rem 0;}
-.section-title{font-family:'Klee One',cursive;font-size:13px;color:var(--text-mid);letter-spacing:0.08em;margin-bottom:10px;padding-left:2px;}
 </style>
 </head>
 <body>
 <div class="app">
   <div class="hdr">
-    <h1>🌱 ハタケランド</h1>
-    <p>作物の記録とAIアドバイス</p>
-    <div class="hdr-deco"></div>
+    <div class="hdr-bg">
+      <img class="hdr-logo" src="icon.png" alt="ハタケランド">
+      <div class="hdr-title">作物の記録とAIアドバイス</div>
+    </div>
   </div>
-  <div class="tabs">
-    <button class="tab active" onclick="sw('crops')">作物管理</button>
-    <button class="tab" onclick="sw('suggest')">おすすめ</button>
-    <button class="tab" onclick="sw('log')">記録帳</button>
+  <div class="tabs-wrap">
+    <div class="tabs">
+      <button class="tab active" onclick="sw('crops')">作物管理</button>
+      <button class="tab" onclick="sw('suggest')">おすすめ</button>
+      <button class="tab" onclick="sw('log')">記録帳</button>
+    </div>
   </div>
+
   <div id="t-crops" class="sec active">
     <div class="crop-list" id="cropList"></div>
   </div>
   <div id="t-suggest" class="sec">
     <div id="suggestList" class="suggest-list"></div>
-    <div style="margin-top:10px;">
-      <button class="trend-btn" id="trendBtn" onclick="loadTrend()">🔍 最新トレンドを取得する</button>
-    </div>
+    <button class="trend-btn" id="trendBtn" onclick="loadTrend()">🔍 最新トレンドを取得する</button>
   </div>
   <div id="t-log" class="sec">
     <div class="log-filter" id="logFilter"></div>
@@ -159,7 +163,7 @@ input:focus{outline:none;border-color:var(--green-mid);}
     <div class="lbl">メモ</div>
     <textarea id="editMemo" placeholder="メモを入力…"></textarea>
     <div class="row2">
-      <div><div class="lbl">サイズメモ</div><input type="text" id="editHeight" placeholder="例：高さ20cm、太さ3cm"></div>
+      <div><div class="lbl">サイズメモ</div><input type="text" id="editHeight" placeholder="例：高さ20cm"></div>
       <div><div class="lbl">気になること</div><input type="text" id="editConcern" placeholder="例：虫・変色"></div>
     </div>
     <div class="modal-btns">
@@ -221,10 +225,7 @@ async function loadLogs(){
 function fmtDate(d){if(!d)return'';return d.slice(0,10).replace(/-/g,'/');}
 function todayStr(){const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 function getLastLog(cropId){return logs.find(l=>l.crop_id===cropId);}
-
-function getRecentLogs(cropId,n=3){
-  return logs.filter(l=>l.crop_id===cropId).slice(0,n);
-}
+function getRecentLogs(cropId,n=5){return logs.filter(l=>l.crop_id===cropId).slice(0,n);}
 
 function renderCrops(){
   document.getElementById('cropList').innerHTML=crops.map(c=>{
@@ -302,7 +303,7 @@ async function saveLog(id){
     })});
     delete photoDataMap[id];
     await loadLogs();
-    alert(`${c.name}の記録を保存しました！\n記録帳からAIアドバイスを確認できます。`);
+    alert(`${c.name}の記録を保存しました！\n記録帳からAIアドバイスをもらえます。`);
     sw('log');
   }catch(e){alert('保存に失敗しました。'+e.message);}
 }
@@ -313,7 +314,7 @@ async function askAIFromLog(logId){
   const btn=document.getElementById('laibtn-'+logId);
   const box=document.getElementById('laibox-'+logId);
   btn.disabled=true;btn.textContent='考え中...';
-  box.innerHTML='<div class="log-ai-lbl">AI農業アドバイザー</div><div class="log-ai-txt">分析中...</div>';
+  box.innerHTML='<div class="log-ai-lbl">AI農業アドバイザー</div><div class="log-ai-txt">過去の記録を分析中...</div>';
   box.style.display='block';
 
   const recentLogs=getRecentLogs(l.crop_id,5);
@@ -321,13 +322,10 @@ async function askAIFromLog(logId){
   const photos=l.photo?JSON.parse(l.photo):[];
   const textContent=`作物：${l.crop_name}\n\n【今回の記録 ${fmtDate(l.log_date)}】\n${l.memo||''}${l.height?'\nサイズ：'+l.height:''}\n${l.concern?'気になること：'+l.concern+'\n':''}\n【過去の記録履歴】\n${historyText}\n\n広島県安佐南区・菌ちゃん農法で栽培。過去の記録を踏まえてアドバイスをお願いします。`;
 
-  let userContent;
-  if(photos.length){
-    userContent=[
-      ...photos.map(p=>({type:'image',source:{type:'base64',media_type:p.split(';')[0].split(':')[1],data:p.split(',')[1]}})),
-      {type:'text',text:textContent}
-    ];
-  }else{userContent=textContent;}
+  let userContent=photos.length?[
+    ...photos.map(p=>({type:'image',source:{type:'base64',media_type:p.split(';')[0].split(':')[1],data:p.split(',')[1]}})),
+    {type:'text',text:textContent}
+  ]:textContent;
 
   try{
     const d=await callAI({
@@ -368,7 +366,7 @@ function renderLog(){
     return`<div class="log-item">
       <div class="log-head">
         <div class="log-crop">${l.crop_ico} ${l.crop_name}</div>
-        <div class="log-date">${fmtDate(l.log_date)}${l.edited_at?' ✏️':''}</div>
+        <div class="log-date">${fmtDate(l.log_date)}</div>
       </div>
       ${photos.length?`<div class="log-photos">${photos.map(p=>`<img class="log-photo" src="${p}">`).join('')}</div>`:''}
       ${l.memo?`<div class="log-memo">📝 ${l.memo}</div>`:''}
@@ -440,6 +438,41 @@ async function deleteLog(id){
   }catch(e){alert('削除に失敗しました。');}
 }
 
+let moreContents={};
+async function toggleMore(idx,name){
+  const content=document.getElementById('smore-'+idx);
+  const btn=document.getElementById('smorebtn-'+idx);
+  if(content.classList.contains('open')){
+    content.classList.remove('open');
+    btn.textContent='MORE +';
+    return;
+  }
+  if(moreContents[idx]){
+    content.innerHTML=moreContents[idx];
+    content.classList.add('open');
+    btn.textContent='LESS −';
+    return;
+  }
+  btn.disabled=true;btn.textContent='読み込み中...';
+  try{
+    const d=await callAI({
+      model:'claude-sonnet-4-5',max_tokens:400,
+      system:'農業×エンタメの専門家として、簡潔に答えてください。300字以内。',
+      messages:[{role:'user',content:`${name}について：栽培スケジュールとハタケランドのイベント・集客への活用方法を教えてください。`}]
+    });
+    const txt=d.content?.map(b=>b.text||'').join('')||'情報を取得できませんでした。';
+    moreContents[idx]=txt;
+    content.innerHTML=txt;
+    content.classList.add('open');
+    btn.textContent='LESS −';
+  }catch(e){
+    content.innerHTML='情報を取得できませんでした。';
+    content.classList.add('open');
+    btn.textContent='LESS −';
+  }
+  btn.disabled=false;
+}
+
 async function loadTrend(){
   const btn=document.getElementById('trendBtn');
   btn.disabled=true;btn.textContent='検索中...';
@@ -453,19 +486,21 @@ async function loadTrend(){
     const txt=d.content?.map(b=>b.text||'').join('')||'[]';
     let items;
     try{items=JSON.parse(txt.replace(/```json|```/g,'').trim());}
-    catch(e){items=defaultSuggests;}
+    catch(e){items=[];}
     renderSuggests([...defaultSuggests,...items]);
   }catch(e){renderSuggests(defaultSuggests);}
   btn.disabled=false;btn.textContent='🔍 最新トレンドを取得する';
 }
 
 function renderSuggests(items){
-  document.getElementById('suggestList').innerHTML=items.map(s=>`
+  moreContents={};
+  document.getElementById('suggestList').innerHTML=items.map((s,i)=>`
     <div class="scard">
       <span class="stag ${s.tag}">${s.label}</span>
       <div class="sname">${s.ico} ${s.name}</div>
       <div class="sdesc">${s.desc}</div>
-      <button class="sask" onclick="sendPrompt('${s.name}について詳しく教えて。栽培スケジュールと、ハタケランドのイベントや集客にどう活かせるか教えて。')">詳しく聞く →</button>
+      <button class="smore-btn" id="smorebtn-${i}" onclick="toggleMore(${i},'${s.name}')">MORE +</button>
+      <div class="smore-content" id="smore-${i}"></div>
     </div>`).join('');
 }
 
