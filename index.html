@@ -33,7 +33,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .detail.open{display:block;}
 .prev-record{background:#f9f9f6;border-radius:10px;padding:10px;margin-bottom:12px;border:1px solid #e8e8e0;}
 .prev-title{font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;}
-.prev-photo{width:100%;max-height:120px;object-fit:cover;border-radius:8px;margin-bottom:6px;}
 .prev-memo{font-size:12px;color:#555;line-height:1.5;}
 .prev-date{font-size:11px;color:#aaa;margin-top:4px;}
 .lbl{font-size:11px;color:#888;margin-bottom:4px;font-weight:500;}
@@ -138,7 +137,7 @@ input[type=text],input[type=date]{width:100%;font-size:13px;border:1px solid #e0
 <script>
 const SUPABASE_URL='https://bwhngwankpsejqeplwuh.supabase.co';
 const SUPABASE_KEY='sb_publishable_In66_z-7OTfE4LdvUSJDzA_Qi3GRnaNAPI';
-const ANTHROPIC_KEY='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';
+const AI_PROXY=SUPABASE_URL+'/functions/v1/ai-proxy';
 
 const crops=[
   {id:'snap',ico:'🫛',name:'スナップえんどう',status:'生育中',dot:'dg',stage:'花が咲き始めた頃'},
@@ -165,6 +164,16 @@ async function sbFetch(path,opts={}){
   if(!res.ok)throw new Error(await res.text());
   const txt=await res.text();
   return txt?JSON.parse(txt):[];
+}
+
+async function callAI(payload){
+  const res=await fetch(AI_PROXY,{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_KEY,'apikey':SUPABASE_KEY},
+    body:JSON.stringify(payload)
+  });
+  if(!res.ok)throw new Error(await res.text());
+  return res.json();
 }
 
 async function loadLogs(){
@@ -265,13 +274,11 @@ async function askAI(id){
     ];
   }else{userContent=textContent;}
   try{
-    const r=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,
-        system:`あなたは広島県安佐南区の自然農法（菌ちゃん農法）農園「ハタケランド」専属の農業アドバイザーです。写真がある場合は必ず触れてください。回答は以下の3セクションで250字以内：\n【今すぐやること】具体的に1〜2個\n【収穫予測】時期の目安\n【注意点】1つだけ\nやさしく実践的な日本語で。`,
-        messages:[{role:'user',content:userContent}]})
+    const d=await callAI({
+      model:'claude-sonnet-4-20250514',max_tokens:600,
+      system:`あなたは広島県安佐南区の自然農法（菌ちゃん農法）農園「ハタケランド」専属の農業アドバイザーです。写真がある場合は必ず触れてください。回答は以下の3セクションで250字以内：\n【今すぐやること】具体的に1〜2個\n【収穫予測】時期の目安\n【注意点】1つだけ\nやさしく実践的な日本語で。`,
+      messages:[{role:'user',content:userContent}]
     });
-    const d=await r.json();
     const txt=d.content?.map(b=>b.text||'').join('')||'取得できませんでした';
     res.innerHTML=`<div class="ai-box"><div class="ai-lbl">AI農業アドバイザー${photos.length?' 📷':''}</div><div class="ai-txt">${txt}</div></div>`;
   }catch(e){res.innerHTML='<div class="ai-box"><div class="ai-lbl">AI農業アドバイザー</div><div class="ai-txt">エラーが発生しました。</div></div>';}
@@ -361,8 +368,6 @@ function onEditPhotos(input){
 }
 
 async function saveEdit(){
-  const idx=logs.findIndex(x=>x.id===editingId);
-  if(idx===-1)return;
   try{
     await sbFetch(`logs?id=eq.${editingId}`,{method:'PATCH',body:JSON.stringify({
       memo:document.getElementById('editMemo').value,
@@ -396,14 +401,12 @@ async function loadTrend(){
   const sl=document.getElementById('suggestList');
   sl.innerHTML='<div class="ai-box"><div class="ai-lbl">検索中</div><div class="ai-txt">最新のトレンドを調べています...</div></div>';
   try{
-    const r=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,
-        tools:[{type:'web_search_20250305',name:'web_search'}],
-        system:`あなたは農業×エンタメのトレンドリサーチャーです。絵本・アニメ・SNSで話題の野菜、海外ブーム食材、スーパーフード、道の駅で人気の珍しい野菜をリサーチ。結果はJSON配列のみ：[{"tag":"tp","label":"ラベル名","ico":"絵文字","name":"作物名","desc":"100字以内"}] tagはts=旬/tt=海外/tp=話題。JSONのみ返すこと。`,
-        messages:[{role:'user',content:`今日は${new Date().getMonth()+1}月${new Date().getDate()}日。広島の農家向けに今注目の野菜トレンドを検索して。`}]})
+    const d=await callAI({
+      model:'claude-sonnet-4-20250514',max_tokens:800,
+      tools:[{type:'web_search_20250305',name:'web_search'}],
+      system:`あなたは農業×エンタメのトレンドリサーチャーです。絵本・アニメ・SNSで話題の野菜、海外ブーム食材、スーパーフード、道の駅で人気の珍しい野菜をリサーチ。結果はJSON配列のみ：[{"tag":"tp","label":"ラベル名","ico":"絵文字","name":"作物名","desc":"100字以内"}] tagはts=旬/tt=海外/tp=話題。JSONのみ返すこと。`,
+      messages:[{role:'user',content:`今日は${new Date().getMonth()+1}月${new Date().getDate()}日。広島の農家向けに今注目の野菜トレンドを検索して。`}]
     });
-    const d=await r.json();
     const txt=d.content?.map(b=>b.text||'').join('')||'[]';
     let items;try{items=JSON.parse(txt.replace(/```json|```/g,'').trim());}catch(e){items=staticSuggests;}
     renderSuggests(items);
