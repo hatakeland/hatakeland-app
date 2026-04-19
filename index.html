@@ -623,10 +623,12 @@ async function loadTrend(){
   btn.disabled=true;btn.textContent='検索中...';
   try{
     const d=await callAI({model:'claude-sonnet-4-5',max_tokens:800,tools:[{type:'web_search_20250305',name:'web_search'}],
-      system:`農業×エンタメのトレンドリサーチャーです。結果はJSON配列のみ：[{"tag":"tp","label":"ラベル名","ico":"絵文字","name":"作物名","desc":"100字以内"}] tagはts=旬/tt=海外/tp=話題。JSONのみ返すこと。`,
-      messages:[{role:'user',content:`今日は${new Date().getMonth()+1}月${new Date().getDate()}日。広島の農家向けに今注目の野菜トレンドを4件検索して。`}]});
-    const txt=d.content?.map(b=>b.text||'').join('')||'[]';
-    let items;try{items=JSON.parse(txt.replace(/```json|```/g,'').trim());}catch(e){items=[];}
+      system:`あなたは農業トレンドリサーチャーです。検索後、必ず以下のJSON配列だけを返してください。説明文は不要です。\n[{"tag":"ts","label":"旬の提案","ico":"🥦","name":"作物名","desc":"100字以内の説明"}]\ntagはts=旬/tt=海外/tp=話題。前置き・後置き・マークダウン一切不要。JSONのみ。`,
+      messages:[{role:'user',content:`今日は${new Date().getMonth()+1}月${new Date().getDate()}日。広島の農家向けに今注目の野菜トレンドを4件検索して。JSON配列のみ返すこと。`}]});
+    const txt=d.content?.filter(b=>b.type==='text').map(b=>b.text||'').join('')||'[]';
+    const match=txt.match(/\[[\s\S]*\]/);
+    let items=[];
+    if(match){try{items=JSON.parse(match[0]);}catch(e){items=[];}}
     renderSuggests([...defaultSuggests,...items]);
   }catch(e){renderSuggests(defaultSuggests);}
   btn.disabled=false;btn.textContent='🔍 最新トレンドを取得する';
