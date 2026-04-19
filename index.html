@@ -25,8 +25,7 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background-
 .crop-list{display:flex;flex-direction:column;gap:10px;}
 .crop-card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;}
 .crop-card.open{border-color:var(--green);}
-.crop-card.work-card{border-color:#C4822A;}
-.crop-card.work-card.open{border-color:#C4822A;border-width:2px;}
+.crop-card.work-card.open{border-color:var(--amber);border-width:2px;}
 .crop-row{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;}
 .crop-ico{font-size:26px;}
 .crop-info{flex:1;}
@@ -95,8 +94,6 @@ input:focus{outline:none;border-color:var(--green-mid);}
 .log-actions{display:flex;gap:8px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--border);}
 .edit-btn{flex:1;padding:7px;font-size:11px;cursor:pointer;border-radius:var(--radius-sm);border:1.5px solid var(--green-mid);background:transparent;color:var(--green);font-family:'Noto Sans JP',sans-serif;}
 .del-btn2{flex:none;padding:7px 12px;font-size:11px;cursor:pointer;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:transparent;color:var(--text-light);font-family:'Noto Sans JP',sans-serif;}
-
-/* 伝言板 */
 .board-input-area{background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:12px;}
 .board-input-area h3{font-family:'Klee One',cursive;font-size:14px;color:var(--amber);margin-bottom:10px;}
 .board-list{display:flex;flex-direction:column;gap:8px;}
@@ -108,12 +105,13 @@ input:focus{outline:none;border-color:var(--green-mid);}
 .board-content{flex:1;}
 .board-text{font-size:13px;color:var(--text);line-height:1.6;}
 .board-item.done .board-text{text-decoration:line-through;color:var(--text-light);}
+.board-photos{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;}
+.board-photo{width:72px;height:72px;object-fit:cover;border-radius:6px;border:1.5px solid var(--border);}
 .board-meta{font-size:10px;color:var(--text-light);margin-top:4px;}
 .board-del{font-size:11px;color:var(--text-light);background:none;border:none;cursor:pointer;padding:0;margin-top:4px;}
 .name-sel{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;}
 .name-btn{flex:none;padding:6px 12px;border-radius:20px;border:1.5px solid var(--border);font-size:12px;cursor:pointer;background:var(--card);color:var(--text-mid);font-family:'Noto Sans JP',sans-serif;transition:all 0.2s;}
 .name-btn.selected{background:var(--amber);color:#fff;border-color:var(--amber);}
-
 .modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(44,36,22,0.6);z-index:100;padding:1rem;align-items:center;justify-content:center;}
 .modal-overlay.open{display:flex;}
 .modal-box{background:var(--bg);border-radius:var(--radius);padding:1.25rem;width:100%;max-width:440px;max-height:90vh;overflow-y:auto;border:1.5px solid var(--border-dark);}
@@ -176,8 +174,14 @@ input:focus{outline:none;border-color:var(--green-mid);}
         <button class="name-btn" onclick="selectName('パートナー')">パートナー</button>
         <button class="name-btn" onclick="selectName('共有者')">共有者</button>
       </div>
+      <div class="lbl">写真（任意）</div>
+      <input type="file" accept="image/*" multiple class="photo-input" id="boardPhotoInput" onchange="onBoardPhotos(this)">
+      <div class="photo-previews" id="boardPhotoPreviews"></div>
+      <div class="photo-upload" onclick="document.getElementById('boardPhotoInput').click()">📷 写真を撮影・選択する</div>
+      <div style="margin-top:10px;">
       <div class="lbl">内容</div>
       <textarea id="boardText" placeholder="例：1段目草刈り完了、菌ちゃんエサ豆乳やった、物置修理お願い…"></textarea>
+      </div>
       <button class="sbtn amber" id="boardSaveBtn" onclick="saveBoard()">📌 投稿する</button>
     </div>
     <div id="boardList" class="board-list"></div>
@@ -251,10 +255,20 @@ const defaultSuggests=[
   {tag:'tt',label:'海外トレンド',ico:'🫐',name:'スーパーフード系ベリー類',desc:'アメリカで健康志向急上昇中。国内でも注目されはじめています。'},
 ];
 
-let openId=null,logs=[],boardItems=[],photoDataMap={},editingId=null,editPhotosData=[],currentFilter='all',selectedIco=ICONS[0],selectedStatus='生育中',selectedName='Nan',moreContents={};
+let openId=null,logs=[],boardItems=[],boardPhotos=[],photoDataMap={},editingId=null,editPhotosData=[],currentFilter='all',selectedIco=ICONS[0],selectedStatus='生育中',selectedName='Nan',moreContents={};
 
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
-function loadCrops(){const s=localStorage.getItem('hatake-crops');if(s){const saved=JSON.parse(s);const hasWork=saved.find(c=>c.id===WORK_ID);crops=[...saved.filter(c=>c.id!==WORK_ID),{id:WORK_ID,ico:'🔧',name:'作業メモ',status:'随時',stage:'畑の雑作業・メモ'}];if(!hasWork)saveCropsLocal();}else saveCropsLocal();}
+
+function loadCrops(){
+  const s=localStorage.getItem('hatake-crops');
+  if(s){
+    const saved=JSON.parse(s);
+    const hasWork=saved.find(c=>c.id===WORK_ID);
+    const others=saved.filter(c=>c.id!==WORK_ID);
+    crops=[...others,{id:WORK_ID,ico:'🔧',name:'作業メモ',status:'随時',stage:'畑の雑作業・メモ'}];
+    if(!hasWork)saveCropsLocal();
+  }else{saveCropsLocal();}
+}
 function saveCropsLocal(){localStorage.setItem('hatake-crops',JSON.stringify(crops));}
 
 async function compressPhoto(dataUrl,maxW=800){
@@ -323,12 +337,12 @@ function renderCrops(){
           ${last.height?`<div class="prev-memo">📐 ${last.height}</div>`:''}
           ${last.concern?`<div class="prev-memo">⚠️ ${last.concern}</div>`:''}
         </div>`:''}
-        ${!isWork?`<div class="photo-area">
+        <div class="photo-area">
           <div class="lbl">写真（複数枚可）</div>
           <input type="file" accept="image/*" multiple class="photo-input" id="pi-${c.id}" onchange="onPhotos('${c.id}',this)">
           <div class="photo-previews" id="pp-${c.id}"></div>
           <div class="photo-upload" onclick="document.getElementById('pi-${c.id}').click()">📷 写真を撮影・選択する</div>
-        </div>`:''}
+        </div>
         <div class="lbl">日付</div>
         <input type="date" id="dt-${c.id}" value="${todayStr()}">
         <div class="lbl">${isWork?'作業内容':'今日の様子・メモ'}</div>
@@ -345,7 +359,9 @@ function renderCrops(){
 
 function renderPhotoPreview(id){
   const photos=photoDataMap[id]||[];
-  document.getElementById('pp-'+id).innerHTML=photos.map((p,i)=>`<div class="photo-thumb"><img src="${p}"><button class="photo-thumb-del" onclick="removePhoto('${id}',${i})">×</button></div>`).join('');
+  const el=document.getElementById('pp-'+id);
+  if(!el)return;
+  el.innerHTML=photos.map((p,i)=>`<div class="photo-thumb"><img src="${p}"><button class="photo-thumb-del" onclick="removePhoto('${id}',${i})">×</button></div>`).join('');
 }
 function removePhoto(id,idx){photoDataMap[id].splice(idx,1);renderPhotoPreview(id);}
 
@@ -369,8 +385,8 @@ async function saveLog(id){
   const h=isWork?'':document.getElementById('h-'+id)?.value||'';
   const q=isWork?'':document.getElementById('q-'+id)?.value||'';
   const dt=document.getElementById('dt-'+id).value;
-  const photos=isWork?[]:(photoDataMap[id]||[]);
-  if(!memo&&!h&&!q&&!photos.length){showToast('メモを入れてください');return;}
+  const photos=photoDataMap[id]||[];
+  if(!memo&&!h&&!q&&!photos.length){showToast('写真かメモを入れてください');return;}
   const btn=document.getElementById('savebtn-'+id);
   btn.disabled=true;btn.textContent='保存中...';
   try{
@@ -417,7 +433,6 @@ function renderFilter(){
     return`<button class="filter-btn ${currentFilter===id?'active':''}" onclick="setFilter('${id}')">${c?c.ico+' '+c.name:id}</button>`;
   }).join('');
 }
-
 function setFilter(id){currentFilter=id;renderFilter();renderLog();}
 
 function renderLog(){
@@ -481,7 +496,6 @@ async function saveEdit(){
   }catch(e){showToast('保存に失敗しました');}
   btn.disabled=false;btn.textContent='保存する';
 }
-
 function closeEdit(){document.getElementById('editModal').classList.remove('open');editingId=null;editPhotosData=[];}
 
 async function deleteLog(id){
@@ -501,14 +515,31 @@ function selectName(name){
   document.querySelectorAll('.name-btn').forEach(b=>{b.classList.toggle('selected',b.textContent===name);});
 }
 
+function renderBoardPhotoPreview(){
+  document.getElementById('boardPhotoPreviews').innerHTML=boardPhotos.map((p,i)=>`<div class="photo-thumb"><img src="${p}"><button class="photo-thumb-del" onclick="removeBoardPhoto(${i})">×</button></div>`).join('');
+}
+function removeBoardPhoto(idx){boardPhotos.splice(idx,1);renderBoardPhotoPreview();}
+
+async function onBoardPhotos(input){
+  const files=Array.from(input.files);if(!files.length)return;
+  for(const file of files){
+    const reader=new FileReader();
+    const dataUrl=await new Promise(r=>{reader.onload=e=>r(e.target.result);reader.readAsDataURL(file);});
+    boardPhotos.push(await compressPhoto(dataUrl));
+  }
+  renderBoardPhotoPreview();
+}
+
 async function saveBoard(){
   const text=document.getElementById('boardText').value.trim();
-  if(!text){showToast('内容を入力してください');return;}
+  if(!text&&!boardPhotos.length){showToast('内容か写真を入れてください');return;}
   const btn=document.getElementById('boardSaveBtn');
   btn.disabled=true;btn.textContent='投稿中...';
   try{
-    await sbFetch('board',{method:'POST',extraHeaders:{'Prefer':'return=minimal'},body:JSON.stringify({text,author:selectedName,done:false})});
+    await sbFetch('board',{method:'POST',extraHeaders:{'Prefer':'return=minimal'},body:JSON.stringify({text,author:selectedName,done:false,photo:JSON.stringify(boardPhotos)})});
     document.getElementById('boardText').value='';
+    boardPhotos=[];
+    renderBoardPhotoPreview();
     await loadBoard();
     showToast('投稿しました');
   }catch(e){showToast('投稿に失敗しました');}
@@ -538,17 +569,20 @@ async function deleteBoard(id){
 function renderBoard(){
   const el=document.getElementById('boardList');
   if(!boardItems.length){el.innerHTML='<div class="empty">伝言・メモがありません。</div>';return;}
-  el.innerHTML=boardItems.map(b=>`
-    <div class="board-item ${b.done?'done':''}">
+  el.innerHTML=boardItems.map(b=>{
+    const photos=b.photo?JSON.parse(b.photo):[];
+    return`<div class="board-item ${b.done?'done':''}">
       <div class="board-item-head">
         <button class="board-check ${b.done?'checked':''}" onclick="toggleBoardDone(${b.id},${b.done})">${b.done?'✓':''}</button>
         <div class="board-content">
-          <div class="board-text">${b.text}</div>
+          ${b.text?`<div class="board-text">${b.text}</div>`:''}
+          ${photos.length?`<div class="board-photos">${photos.map(p=>`<img class="board-photo" src="${p}">`).join('')}</div>`:''}
           <div class="board-meta">${b.author||''}・${fmtDateTime(b.created_at)}</div>
           <button class="board-del" onclick="deleteBoard(${b.id})">削除</button>
         </div>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 function openAddCrop(){
