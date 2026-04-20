@@ -300,7 +300,7 @@ async function callAI(payload){
 
 async function loadLogs(){
   document.getElementById('logList').innerHTML='<div class="loading"><div class="spinner"></div>読み込み中...</div>';
-  try{logs=await sbFetch('logs?order=log_date.desc,created_at.desc&limit=50',{extraHeaders:{'Prefer':'return=representation'}});}
+  try{logs=await sbFetch('logs?select=*&limit=50',{extraHeaders:{'Prefer':'return=representation'}});}
   catch(e){logs=[];}
   renderLog();renderFilter();renderCrops();
 }
