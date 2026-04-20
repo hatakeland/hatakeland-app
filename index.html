@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🌱 ハタケランド</title>
 <link rel="apple-touch-icon" href="icon.png">
-<link rel="manifest" href="manifest.json">
 <link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -170,7 +169,7 @@ input:focus{outline:none;border-color:var(--green-mid);}
     <div class="board-input-area">
       <h3>📋 伝言・作業メモを追加</h3>
       <div class="lbl">投稿者</div>
-      <div class="name-sel" id="nameSel">
+      <div class="name-sel">
         <button class="name-btn selected" onclick="selectName('Nan')">Nan</button>
         <button class="name-btn" onclick="selectName('パートナー')">パートナー</button>
         <button class="name-btn" onclick="selectName('共有者')">共有者</button>
@@ -180,8 +179,8 @@ input:focus{outline:none;border-color:var(--green-mid);}
       <div class="photo-previews" id="boardPhotoPreviews"></div>
       <div class="photo-upload" onclick="document.getElementById('boardPhotoInput').click()">📷 写真を撮影・選択する</div>
       <div style="margin-top:10px;">
-      <div class="lbl">内容</div>
-      <textarea id="boardText" placeholder="例：1段目草刈り完了、菌ちゃんエサ豆乳やった、物置修理お願い…"></textarea>
+        <div class="lbl">内容</div>
+        <textarea id="boardText" placeholder="例：1段目草刈り完了、菌ちゃんエサ豆乳やった…"></textarea>
       </div>
       <button class="sbtn amber" id="boardSaveBtn" onclick="saveBoard()">📌 投稿する</button>
     </div>
@@ -236,6 +235,7 @@ input:focus{outline:none;border-color:var(--green-mid);}
 const SUPABASE_URL='https://bwhngwankpsejqeplwuh.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ3aG5nd2Fua3BzZWpxZXBsd3VoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NTE3MTgsImV4cCI6MjA5MjAyNzcxOH0.oyRD5PjPbKMQZL0XneEUzQVYSEKx2fkyLW7lQYiu2WE';
 const AI_PROXY=SUPABASE_URL+'/functions/v1/ai-proxy';
+const STORAGE_BUCKET='hatakeland-photos';
 const ICONS=['🍅','🫛','🫘','🧅','🧄','🥔','🌽','🥕','🥬','🥦','🍆','🫑','🌶️','🥒','🌿','🍠','🫐','🍓','🍋','🌱'];
 const STATUS_DOTS={'生育中':'dg','収穫近し':'da','発芽待ち':'db','収穫済み':'da'};
 const WORK_ID='__work__';
@@ -256,7 +256,7 @@ const defaultSuggests=[
   {tag:'tt',label:'海外トレンド',ico:'🫐',name:'スーパーフード系ベリー類',desc:'アメリカで健康志向急上昇中。国内でも注目されはじめています。'},
 ];
 
-let openId=null,logs=[],boardItems=[],boardPhotos=[],photoDataMap={},editingId=null,editPhotosData=[],currentFilter='all',selectedIco=ICONS[0],selectedStatus='生育中',selectedName='Nan',moreContents={};
+let openId=null,logs=[],boardItems=[],boardPhotoFiles=[],photoFileMap={},editingId=null,editPhotosData=[],editNewFiles=[],currentFilter='all',selectedIco=ICONS[0],selectedStatus='生育中',selectedName='Nan',moreContents={};
 
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 
@@ -264,25 +264,62 @@ function loadCrops(){
   const s=localStorage.getItem('hatake-crops');
   if(s){
     const saved=JSON.parse(s);
-    const hasWork=saved.find(c=>c.id===WORK_ID);
     const others=saved.filter(c=>c.id!==WORK_ID);
     crops=[...others,{id:WORK_ID,ico:'🔧',name:'作業メモ',status:'随時',stage:'畑の雑作業・メモ'}];
-    if(!hasWork)saveCropsLocal();
-  }else{saveCropsLocal();}
+  }
+  saveCropsLocal();
 }
 function saveCropsLocal(){localStorage.setItem('hatake-crops',JSON.stringify(crops));}
 
-async function compressPhoto(dataUrl,maxW=800){
+async function compressPhoto(file,maxW=800){
   return new Promise(res=>{
-    const img=new Image();
-    img.onload=()=>{
-      const scale=Math.min(1,maxW/Math.max(img.width,img.height));
-      const w=Math.round(img.width*scale),h=Math.round(img.height*scale);
-      const c=document.createElement('canvas');c.width=w;c.height=h;
-      c.getContext('2d').drawImage(img,0,0,w,h);
-      res(c.toDataURL('image/jpeg',0.7));
-    };img.src=dataUrl;
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const img=new Image();
+      img.onload=()=>{
+        const scale=Math.min(1,maxW/Math.max(img.width,img.height));
+        const w=Math.round(img.width*scale),h=Math.round(img.height*scale);
+        const c=document.createElement('canvas');c.width=w;c.height=h;
+        c.getContext('2d').drawImage(img,0,0,w,h);
+        c.toBlob(blob=>res(blob),'image/jpeg',0.7);
+      };
+      img.src=e.target.result;
+    };
+    reader.readAsDataURL(file);
   });
+}
+
+async function uploadPhoto(blob,path){
+  const res=await fetch(`${SUPABASE_URL}/storage/v1/object/${STORAGE_BUCKET}/${path}`,{
+    method:'POST',
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'image/jpeg','x-upsert':'true'},
+    body:blob
+  });
+  if(!res.ok)throw new Error(await res.text());
+  return `${SUPABASE_URL}/storage/v1/object/sign/${STORAGE_BUCKET}/${path}`;
+}
+
+async function getSignedUrl(path){
+  const res=await fetch(`${SUPABASE_URL}/storage/v1/object/sign/${STORAGE_BUCKET}/${path}`,{
+    method:'POST',
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},
+    body:JSON.stringify({expiresIn:86400*365})
+  });
+  if(!res.ok)return null;
+  const d=await res.json();
+  return `${SUPABASE_URL}/storage/v1${d.signedURL}`;
+}
+
+async function uploadPhotos(files,prefix){
+  const urls=[];
+  for(let i=0;i<files.length;i++){
+    const blob=await compressPhoto(files[i]);
+    const path=`${prefix}_${Date.now()}_${i}.jpg`;
+    await uploadPhoto(blob,path);
+    const url=await getSignedUrl(path);
+    if(url)urls.push(url);
+  }
+  return urls;
 }
 
 async function sbFetch(path,opts={}){
@@ -333,7 +370,7 @@ function renderCrops(){
       <div class="detail ${openId===c.id?'open':''}" id="d-${c.id}">
         ${last?`<div class="prev-record">
           <div class="prev-title">📋 前回の記録 — ${fmtDate(last.log_date)}</div>
-          ${photos.length?`<div class="prev-photos">${photos.map(p=>`<img class="prev-thumb" src="${p}">`).join('')}</div>`:''}
+          ${photos.length?`<div class="prev-photos">${photos.map(p=>`<img class="prev-thumb" src="${p}" onerror="this.style.display='none'">`).join('')}</div>`:''}
           ${last.memo?`<div class="prev-memo">📝 ${last.memo}</div>`:''}
           ${last.height?`<div class="prev-memo">📐 ${last.height}</div>`:''}
           ${last.concern?`<div class="prev-memo">⚠️ ${last.concern}</div>`:''}
@@ -359,21 +396,18 @@ function renderCrops(){
 }
 
 function renderPhotoPreview(id){
-  const photos=photoDataMap[id]||[];
+  const files=photoFileMap[id]||[];
   const el=document.getElementById('pp-'+id);
   if(!el)return;
-  el.innerHTML=photos.map((p,i)=>`<div class="photo-thumb"><img src="${p}"><button class="photo-thumb-del" onclick="removePhoto('${id}',${i})">×</button></div>`).join('');
+  const urls=files.map(f=>URL.createObjectURL(f));
+  el.innerHTML=urls.map((u,i)=>`<div class="photo-thumb"><img src="${u}"><button class="photo-thumb-del" onclick="removePhoto('${id}',${i})">×</button></div>`).join('');
 }
-function removePhoto(id,idx){photoDataMap[id].splice(idx,1);renderPhotoPreview(id);}
+function removePhoto(id,idx){photoFileMap[id].splice(idx,1);renderPhotoPreview(id);}
 
-async function onPhotos(id,input){
+function onPhotos(id,input){
   const files=Array.from(input.files);if(!files.length)return;
-  photoDataMap[id]=photoDataMap[id]||[];
-  for(const file of files){
-    const reader=new FileReader();
-    const dataUrl=await new Promise(r=>{reader.onload=e=>r(e.target.result);reader.readAsDataURL(file);});
-    photoDataMap[id].push(await compressPhoto(dataUrl));
-  }
+  photoFileMap[id]=photoFileMap[id]||[];
+  photoFileMap[id].push(...files);
   renderPhotoPreview(id);
 }
 
@@ -386,17 +420,21 @@ async function saveLog(id){
   const h=isWork?'':document.getElementById('h-'+id)?.value||'';
   const q=isWork?'':document.getElementById('q-'+id)?.value||'';
   const dt=document.getElementById('dt-'+id).value;
-  const photos=photoDataMap[id]||[];
-  if(!memo&&!h&&!q&&!photos.length){showToast('写真かメモを入れてください');return;}
+  const files=photoFileMap[id]||[];
+  if(!memo&&!h&&!q&&!files.length){showToast('写真かメモを入れてください');return;}
   const btn=document.getElementById('savebtn-'+id);
   btn.disabled=true;btn.textContent='保存中...';
   try{
-    await sbFetch('logs',{method:'POST',extraHeaders:{'Prefer':'return=minimal'},body:JSON.stringify({crop_id:id,crop_name:c.name,crop_ico:c.ico,memo,height:h,concern:q,ai_advice:'',photo:JSON.stringify(photos),log_date:dt||todayStr()})});
-    delete photoDataMap[id];
+    const photoUrls=files.length?await uploadPhotos(files,`logs/${id}`):[]; 
+    await sbFetch('logs',{method:'POST',extraHeaders:{'Prefer':'return=minimal'},body:JSON.stringify({
+      crop_id:id,crop_name:c.name,crop_ico:c.ico,memo,height:h,concern:q,ai_advice:'',
+      photo:JSON.stringify(photoUrls),log_date:dt||todayStr()
+    })});
+    delete photoFileMap[id];
     await loadLogs();
     showToast(`${c.name}の記録を保存しました！`);
     sw('log');
-  }catch(e){showToast('保存に失敗しました');}
+  }catch(e){showToast('保存に失敗しました: '+e.message);}
   btn.disabled=false;btn.textContent='📝 記録を保存する';
 }
 
@@ -410,14 +448,11 @@ async function askAIFromLog(logId){
   box.style.display='block';
   const recentLogs=getRecentLogs(l.crop_id,5);
   const historyText=recentLogs.map(r=>`[${fmtDate(r.log_date)}] ${r.memo||''}${r.height?' サイズ:'+r.height:''}${r.concern?' 気になること:'+r.concern:''}`).join('\n');
-  const photos=l.photo?JSON.parse(l.photo):[];
   const textContent=`作物：${l.crop_name}\n\n【今回の記録 ${fmtDate(l.log_date)}】\n${l.memo||''}${l.height?'\nサイズ：'+l.height:''}\n${l.concern?'気になること：'+l.concern+'\n':''}\n【過去の記録履歴】\n${historyText}\n\n広島県安佐南区・菌ちゃん農法で栽培。`;
-  const photoToSend=photos.slice(0,1);
-  let userContent=photoToSend.length?[...photoToSend.map(p=>({type:'image',source:{type:'base64',media_type:p.split(';')[0].split(':')[1],data:p.split(',')[1]}})),{type:'text',text:textContent}]:textContent;
   try{
     const d=await callAI({model:'claude-sonnet-4-5',max_tokens:500,
       system:`あなたは広島県安佐南区の自然農法（菌ちゃん農法）農園「ハタケランド」専属の農業アドバイザーです。過去の記録履歴を必ず参考にして文脈を踏まえた具体的なアドバイスをしてください。回答は以下の3セクションで250字以内：\n【状況の読み取り】過去の記録から見えること\n【今すぐやること】具体的に1〜2個\n【次回の確認ポイント】\nやさしく実践的な日本語で。`,
-      messages:[{role:'user',content:userContent}]});
+      messages:[{role:'user',content:textContent}]});
     const txt=d.content?.map(b=>b.text||'').join('')||'取得できませんでした';
     box.innerHTML=`<div class="log-ai-lbl">AI農業アドバイザー</div><div class="log-ai-txt">${txt}</div>`;
     await sbFetch(`logs?id=eq.${logId}`,{method:'PATCH',extraHeaders:{'Prefer':'return=minimal'},body:JSON.stringify({ai_advice:txt})});
@@ -446,7 +481,7 @@ function renderLog(){
     const hasAI=l.ai_advice&&l.ai_advice.length>0;
     return`<div class="log-item" id="logitem-${l.id}">
       <div class="log-head"><div class="log-crop">${l.crop_ico} ${l.crop_name}</div><div class="log-date">${fmtDate(l.log_date)}</div></div>
-      ${photos.length?`<div class="log-photos">${photos.map(p=>`<img class="log-photo" src="${p}">`).join('')}</div>`:''}
+      ${photos.length?`<div class="log-photos">${photos.map(p=>`<img class="log-photo" src="${p}" onerror="this.style.display='none'">`).join('')}</div>`:''}
       ${l.memo?`<div class="log-memo">📝 ${l.memo}</div>`:''}
       ${l.height?`<div class="log-memo">📐 ${l.height}</div>`:''}
       ${l.concern?`<div class="log-memo">⚠️ ${l.concern}</div>`:''}
@@ -463,13 +498,19 @@ function renderLog(){
 }
 
 function renderEditPhotos(){
-  document.getElementById('editPhotoPreviews').innerHTML=editPhotosData.map((p,i)=>`<div class="edit-photo-thumb"><img src="${p}"><button class="edit-photo-del" onclick="removeEditPhoto(${i})">×</button></div>`).join('');
+  document.getElementById('editPhotoPreviews').innerHTML=[
+    ...editPhotosData.map((u,i)=>`<div class="edit-photo-thumb"><img src="${u}" onerror="this.style.display='none'"><button class="edit-photo-del" onclick="removeEditExistingPhoto(${i})">×</button></div>`),
+    ...editNewFiles.map((f,i)=>`<div class="edit-photo-thumb"><img src="${URL.createObjectURL(f)}"><button class="edit-photo-del" onclick="removeEditNewFile(${i})">×</button></div>`)
+  ].join('');
 }
-function removeEditPhoto(idx){editPhotosData.splice(idx,1);renderEditPhotos();}
+function removeEditExistingPhoto(idx){editPhotosData.splice(idx,1);renderEditPhotos();}
+function removeEditNewFile(idx){editNewFiles.splice(idx,1);renderEditPhotos();}
 
 function openEdit(id){
   const l=logs.find(x=>x.id===id);if(!l)return;
-  editingId=id;editPhotosData=l.photo?JSON.parse(l.photo):[];
+  editingId=id;
+  editPhotosData=l.photo?JSON.parse(l.photo):[];
+  editNewFiles=[];
   document.getElementById('editTitle').textContent=`${l.crop_ico} ${l.crop_name}の記録を編集`;
   document.getElementById('editMemo').value=l.memo||'';
   document.getElementById('editHeight').value=l.height||'';
@@ -479,12 +520,8 @@ function openEdit(id){
   document.getElementById('editModal').classList.add('open');
 }
 
-async function onEditPhotos(input){
-  for(const file of Array.from(input.files)){
-    const reader=new FileReader();
-    const dataUrl=await new Promise(r=>{reader.onload=e=>r(e.target.result);reader.readAsDataURL(file);});
-    editPhotosData.push(await compressPhoto(dataUrl));
-  }
+function onEditPhotos(input){
+  editNewFiles.push(...Array.from(input.files));
   renderEditPhotos();
 }
 
@@ -492,12 +529,25 @@ async function saveEdit(){
   const btn=document.getElementById('editSaveBtn');
   btn.disabled=true;btn.textContent='保存中...';
   try{
-    await sbFetch(`logs?id=eq.${editingId}`,{method:'PATCH',extraHeaders:{'Prefer':'return=minimal'},body:JSON.stringify({memo:document.getElementById('editMemo').value,height:document.getElementById('editHeight').value,concern:document.getElementById('editConcern').value,log_date:document.getElementById('editDate').value,photo:JSON.stringify(editPhotosData),edited_at:new Date().toISOString()})});
+    const l=logs.find(x=>x.id===editingId);
+    let newUrls=[];
+    if(editNewFiles.length){
+      newUrls=await uploadPhotos(editNewFiles,`logs/${l?.crop_id||'edit'}`);
+    }
+    const allPhotos=[...editPhotosData,...newUrls];
+    await sbFetch(`logs?id=eq.${editingId}`,{method:'PATCH',extraHeaders:{'Prefer':'return=minimal'},body:JSON.stringify({
+      memo:document.getElementById('editMemo').value,
+      height:document.getElementById('editHeight').value,
+      concern:document.getElementById('editConcern').value,
+      log_date:document.getElementById('editDate').value,
+      photo:JSON.stringify(allPhotos),
+      edited_at:new Date().toISOString()
+    })});
     await loadLogs();closeEdit();showToast('記録を更新しました');
   }catch(e){showToast('保存に失敗しました');}
   btn.disabled=false;btn.textContent='保存する';
 }
-function closeEdit(){document.getElementById('editModal').classList.remove('open');editingId=null;editPhotosData=[];}
+function closeEdit(){document.getElementById('editModal').classList.remove('open');editingId=null;editPhotosData=[];editNewFiles=[];}
 
 async function deleteLog(id){
   if(!confirm('この記録を削除しますか？'))return;
@@ -510,39 +560,28 @@ async function deleteLog(id){
   }catch(e){showToast('削除に失敗しました');}
 }
 
-// 伝言板
 function selectName(name){
   selectedName=name;
   document.querySelectorAll('.name-btn').forEach(b=>{b.classList.toggle('selected',b.textContent===name);});
 }
 
 function renderBoardPhotoPreview(){
-  document.getElementById('boardPhotoPreviews').innerHTML=boardPhotos.map((p,i)=>`<div class="photo-thumb"><img src="${p}"><button class="photo-thumb-del" onclick="removeBoardPhoto(${i})">×</button></div>`).join('');
+  document.getElementById('boardPhotoPreviews').innerHTML=boardPhotoFiles.map((f,i)=>`<div class="photo-thumb"><img src="${URL.createObjectURL(f)}"><button class="photo-thumb-del" onclick="removeBoardPhoto(${i})">×</button></div>`).join('');
 }
-function removeBoardPhoto(idx){boardPhotos.splice(idx,1);renderBoardPhotoPreview();}
-
-async function onBoardPhotos(input){
-  const files=Array.from(input.files);if(!files.length)return;
-  for(const file of files){
-    const reader=new FileReader();
-    const dataUrl=await new Promise(r=>{reader.onload=e=>r(e.target.result);reader.readAsDataURL(file);});
-    boardPhotos.push(await compressPhoto(dataUrl));
-  }
-  renderBoardPhotoPreview();
-}
+function removeBoardPhoto(idx){boardPhotoFiles.splice(idx,1);renderBoardPhotoPreview();}
+function onBoardPhotos(input){boardPhotoFiles.push(...Array.from(input.files));renderBoardPhotoPreview();}
 
 async function saveBoard(){
   const text=document.getElementById('boardText').value.trim();
-  if(!text&&!boardPhotos.length){showToast('内容か写真を入れてください');return;}
+  if(!text&&!boardPhotoFiles.length){showToast('内容か写真を入れてください');return;}
   const btn=document.getElementById('boardSaveBtn');
   btn.disabled=true;btn.textContent='投稿中...';
   try{
-    await sbFetch('board',{method:'POST',extraHeaders:{'Prefer':'return=minimal'},body:JSON.stringify({text,author:selectedName,done:false,photo:JSON.stringify(boardPhotos)})});
+    const photoUrls=boardPhotoFiles.length?await uploadPhotos(boardPhotoFiles,'board'):[];
+    await sbFetch('board',{method:'POST',extraHeaders:{'Prefer':'return=minimal'},body:JSON.stringify({text,author:selectedName,done:false,photo:JSON.stringify(photoUrls)})});
     document.getElementById('boardText').value='';
-    boardPhotos=[];
-    renderBoardPhotoPreview();
-    await loadBoard();
-    showToast('投稿しました');
+    boardPhotoFiles=[];renderBoardPhotoPreview();
+    await loadBoard();showToast('投稿しました');
   }catch(e){showToast('投稿に失敗しました');}
   btn.disabled=false;btn.textContent='📌 投稿する';
 }
@@ -562,8 +601,7 @@ async function deleteBoard(id){
     const res=await fetch(`${SUPABASE_URL}/rest/v1/board?id=eq.${id}`,{method:'DELETE',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Prefer':'return=minimal'}});
     if(!res.ok)throw new Error(await res.text());
     boardItems=boardItems.filter(x=>x.id!==id);
-    renderBoard();
-    showToast('削除しました');
+    renderBoard();showToast('削除しました');
   }catch(e){showToast('削除に失敗しました');}
 }
 
@@ -577,7 +615,7 @@ function renderBoard(){
         <button class="board-check ${b.done?'checked':''}" onclick="toggleBoardDone(${b.id},${b.done})">${b.done?'✓':''}</button>
         <div class="board-content">
           ${b.text?`<div class="board-text">${b.text}</div>`:''}
-          ${photos.length?`<div class="board-photos">${photos.map(p=>`<img class="board-photo" src="${p}">`).join('')}</div>`:''}
+          ${photos.length?`<div class="board-photos">${photos.map(p=>`<img class="board-photo" src="${p}" onerror="this.style.display='none'">`).join('')}</div>`:''}
           <div class="board-meta">${b.author||''}・${fmtDateTime(b.created_at)}</div>
           <button class="board-del" onclick="deleteBoard(${b.id})">削除</button>
         </div>
@@ -623,7 +661,7 @@ async function loadTrend(){
   btn.disabled=true;btn.textContent='検索中...';
   try{
     const d=await callAI({model:'claude-sonnet-4-5',max_tokens:800,tools:[{type:'web_search_20250305',name:'web_search'}],
-      system:`あなたは農業トレンドリサーチャーです。検索後、必ず以下のJSON配列だけを返してください。説明文は不要です。\n[{"tag":"ts","label":"旬の提案","ico":"🥦","name":"作物名","desc":"100字以内の説明"}]\ntagはts=旬/tt=海外/tp=話題。前置き・後置き・マークダウン一切不要。JSONのみ。`,
+      system:`農業×エンタメのトレンドリサーチャーです。検索後、必ず以下のJSON配列だけを返してください。\n[{"tag":"ts","label":"旬の提案","ico":"絵文字","name":"作物名","desc":"100字以内"}]\ntagはts=旬/tt=海外/tp=話題。前置き・後置き・マークダウン一切不要。JSONのみ。`,
       messages:[{role:'user',content:`今日は${new Date().getMonth()+1}月${new Date().getDate()}日。広島の農家向けに今注目の野菜トレンドを4件検索して。JSON配列のみ返すこと。`}]});
     const txt=d.content?.filter(b=>b.type==='text').map(b=>b.text||'').join('')||'[]';
     const match=txt.match(/\[[\s\S]*\]/);
