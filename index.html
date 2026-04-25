@@ -477,6 +477,15 @@ async function askAIFromLog(logId){
   btn.disabled=false;btn.textContent='🌿 AIアドバイスを更新する';
 }
 
+function toggleAI(id){
+  const box=document.getElementById('laibox-'+id);
+  const btn=document.getElementById('aitoggle-'+id);
+  if(!box||!btn)return;
+  const isOpen=box.style.display!=='none';
+  box.style.display=isOpen?'none':'block';
+  btn.textContent=isOpen?'💬 AIアドバイスを見る ▼':'💬 AIアドバイスを閉じる ▲';
+}
+
 function renderFilter(){
   const cropIds=['all',...new Set(logs.map(l=>l.crop_id))];
   document.getElementById('logFilter').innerHTML=cropIds.map(id=>{
@@ -501,7 +510,9 @@ function renderLog(){
       ${l.memo?`<div class="log-memo">📝 ${l.memo}</div>`:''}
       ${l.height?`<div class="log-memo">📐 ${l.height}</div>`:''}
       ${l.concern?`<div class="log-memo">⚠️ ${l.concern}</div>`:''}
-      ${!isWork?`<div class="log-ai-box" id="laibox-${l.id}" style="${hasAI?'':'display:none'}">
+      ${!isWork?`
+      ${hasAI?`<button class="log-ai-btn" style="background:transparent;border:1px solid var(--green-mid);color:var(--green);margin-top:8px;" id="aitoggle-${l.id}" onclick="toggleAI(${l.id})">💬 AIアドバイスを見る ▼</button>`:''}
+      <div class="log-ai-box" id="laibox-${l.id}" style="display:none;">
         ${hasAI?`<div class="log-ai-lbl">AI農業アドバイザー</div><div class="log-ai-txt">${l.ai_advice}</div>`:''}
       </div>
       <button class="log-ai-btn" id="laibtn-${l.id}" onclick="askAIFromLog(${l.id})">${hasAI?'🌿 AIアドバイスを更新する':'🌿 この記録でAIアドバイスをもらう'}</button>`:''}
