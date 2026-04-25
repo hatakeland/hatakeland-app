@@ -236,7 +236,7 @@ const SUPABASE_URL='https://bwhngwankpsejqeplwuh.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ3aG5nd2Fua3BzZWpxZXBsd3VoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NTE3MTgsImV4cCI6MjA5MjAyNzcxOH0.oyRD5PjPbKMQZL0XneEUzQVYSEKx2fkyLW7lQYiu2WE';
 const AI_PROXY=SUPABASE_URL+'/functions/v1/ai-proxy';
 const STORAGE_BUCKET='hatakeland-photos';
-const ICONS=['🍅','🫛','🫘','🧅','🧄','🥔','🌽','🥕','🥬','🥦','🍆','🫑','🌶️','🥒','🌿','🍠','🫐','🍓','🍋','🌱'];
+const ICONS=['🍅','🫛','🫘','🧅','🧄','🥔','🌽','🥕','🥬','🥦','🍆','🫑','🌶️','🥒','🌿','🍠','🫐','🍓','🍋','🌱','🍉','🌾','🫚','🥑','🍄'];
 const STATUS_DOTS={'生育中':'dg','収穫近し':'da','発芽待ち':'db','収穫済み':'da'};
 const WORK_ID='__work__';
 
@@ -337,7 +337,7 @@ async function callAI(payload){
 
 async function loadLogs(){
   document.getElementById('logList').innerHTML='<div class="loading"><div class="spinner"></div>読み込み中...</div>';
-  try{logs=await sbFetch('logs?select=*&order=id.desc&limit=50',{extraHeaders:{'Prefer':'return=representation'}});}
+  try{logs=await sbFetch('logs?select=*&limit=50',{extraHeaders:{'Prefer':'return=representation'}});}
   catch(e){logs=[];}
   renderLog();renderFilter();renderCrops();
 }
@@ -390,9 +390,25 @@ function renderCrops(){
           <div><div class="lbl">気になること</div><input type="text" id="q-${c.id}" placeholder="例：虫・変色"></div>
         </div>`:''}
         <button class="sbtn ${isWork?'amber':''}" id="savebtn-${c.id}" onclick="saveLog('${c.id}')">📝 記録を保存する</button>
+        ${!isWork?`<div style="margin-top:8px;padding-top:8px;border-top:1px dashed #E0D8C8;">
+          <div style="font-size:11px;color:#6B5E4A;margin-bottom:6px;font-weight:500;">状態を変更する</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;" id="status-btns-${c.id}">
+            ${['発芽待ち','生育中','収穫近し','収穫済み'].map(s=>`<button onclick="changeCropStatus('${c.id}','${s}')" style="padding:5px 10px;font-size:11px;cursor:pointer;border-radius:8px;border:1.5px solid ${c.status===s?'#4A7C59':'#E0D8C8'};background:${c.status===s?'#E8F0EB':'#FFFDF7'};color:${c.status===s?'#4A7C59':'#6B5E4A'};font-family:inherit;">${s}</button>`).join('')}
+          </div>
+        </div>`:''}
       </div>
     </div>`;
   }).join('');
+}
+
+function changeCropStatus(id,status){
+  const idx=crops.findIndex(c=>c.id===id);
+  if(idx===-1)return;
+  crops[idx].status=status;
+  saveCropsLocal();
+  openId=id;
+  renderCrops();
+  showToast('状態を「'+status+'」に変更しました');
 }
 
 function renderPhotoPreview(id){
