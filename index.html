@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🌱 ハタケランド</title>
 <link rel="apple-touch-icon" href="icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
@@ -337,7 +337,7 @@ async function callAI(payload){
 
 async function loadLogs(){
   document.getElementById('logList').innerHTML='<div class="loading"><div class="spinner"></div>読み込み中...</div>';
-  try{logs=await sbFetch('logs?select=*&order=log_date.desc,id.desc&limit=50',{extraHeaders:{'Prefer':'return=representation'}});}
+  try{logs=await sbFetch('logs?select=*&limit=50',{extraHeaders:{'Prefer':'return=representation'}});}
   catch(e){logs=[];}
   renderLog();renderFilter();renderCrops();
 }
@@ -491,7 +491,9 @@ function renderFilter(){
   document.getElementById('logFilter').innerHTML=cropIds.map(id=>{
     if(id==='all')return`<button class="filter-btn ${currentFilter==='all'?'active':''}" onclick="setFilter('all')">すべて</button>`;
     const c=crops.find(x=>x.id===id);
-    return`<button class="filter-btn ${currentFilter===id?'active':''}" onclick="setFilter('${id}')">${c?c.ico+' '+c.name:id}</button>`;
+    const l=logs.find(x=>x.crop_id===id);
+    const label=c?c.ico+' '+c.name:l?l.crop_ico+' '+l.crop_name:id;
+    return`<button class="filter-btn ${currentFilter===id?'active':''}" onclick="setFilter('${id}')">${label}</button>`;
   }).join('');
 }
 function setFilter(id){currentFilter=id;renderFilter();renderLog();}
