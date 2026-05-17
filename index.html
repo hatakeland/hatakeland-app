@@ -672,11 +672,19 @@ async function saveAddCrop(){
   const name=document.getElementById('newCropName').value.trim();
   if(!name){showToast('作物名を入力してください');return;}
   const id='crop_'+Date.now();
+  const btn=document.querySelector('#addCropModal .modal-save');
+  btn.disabled=true;btn.textContent='追加中...';
   try{
-    await sbFetch('crops',{method:'POST',extraHeaders:{'Prefer':'return=minimal'},body:JSON.stringify({id,ico:selectedIco,name,status:selectedStatus,stage:'新しく追加した作物'})});
+    const result=await sbFetch('crops',{method:'POST',extraHeaders:{'Prefer':'return=representation'},body:JSON.stringify({id,ico:selectedIco,name,status:selectedStatus,stage:'新しく追加した作物'})});
+    if(!result||!result.length){throw new Error('保存の確認ができませんでした');}
     await loadCrops();
     renderCrops();closeAddCrop();showToast(name+'を追加しました');
-  }catch(e){showToast('追加に失敗しました');}
+  }catch(e){
+    showToast('追加に失敗しました: '+e.message);
+    console.error('saveAddCrop error',e);
+  }finally{
+    btn.disabled=false;btn.textContent='追加する';
+  }
 }
 function closeAddCrop(){document.getElementById('addCropModal').classList.remove('open');}
 
